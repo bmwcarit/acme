@@ -120,9 +120,9 @@ ENDFUNCTION(ACME_ADD_EXTERNAL_LIBRARY)
 # \text  	Sets the lokal variable \a CURRENT_MODULE_NAME, invokes the CMake\n
 #           command `ADD_SUBDIRECTORY()` and the Function `INTERNAL_JUST_DOIT()`.
 # \details 	--------------------------------------------------------------------------------------------------------------------\n \n
-FUNCTION(ACME_ADD_SUBDIRECTORY sub_dir_name)
+MACRO(ACME_ADD_SUBDIRECTORY sub_dir_name)
 	INTERNAL_ACME_ADD_SUBDIRECTORY("${sub_dir_name}")
-ENDFUNCTION(ACME_ADD_SUBDIRECTORY)
+ENDMACRO(ACME_ADD_SUBDIRECTORY)
 
 ##
 # \page     ACME_API ACME_API

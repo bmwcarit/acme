@@ -14,7 +14,7 @@
 # limitations under the License.
 #
 
-CMAKE_MINIMUM_REQUIRED(VERSION 2.8.8) # required for target property 'include_directory'
+CMAKE_MINIMUM_REQUIRED(VERSION 2.8.9) # required for target property 'include_directory'
 
 IF ("${TARGET_OS}" STREQUAL "")
 	SET(TARGET_OS ${CMAKE_SYSTEM_NAME})
@@ -70,6 +70,8 @@ IF("${GLOBAL_TOP_LEVEL_SOURCE_DIR}" STREQUAL "${PROJECT_SOURCE_DIR}")
 	SET(CMAKE_RESOURCE_OUTPUT_DIRECTORY "${GLOBAL_TOP_LEVEL_BINARY_DIR}/${CMAKE_PROJECT_NAME}/res"                			  CACHE INTERNAL "path to store resource files")
 	SET(CMAKE_DOC_OUTPUT_DIRECTORY      "${GLOBAL_TOP_LEVEL_BINARY_DIR}/${CMAKE_PROJECT_NAME}/doc"                			  CACHE INTERNAL "path to store documentation files")
 ENDIF()
+
+SET(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake/modules" )
 	
 # Define global cache-variables and set them to their default values
 

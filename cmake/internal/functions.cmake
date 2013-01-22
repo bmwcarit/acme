@@ -26,12 +26,13 @@ INCLUDE(${ACME_PATH}/internal/hooks.cmake)
 # Internal methods provided by ACME and invoked by acme.cmake
 #--------------------------------------------------------------------------
 
-FUNCTION(INTERNAL_ACME_ADD_SUBDIRECTORY int_sub_dir_name)
+# Must be a Macro
+MACRO(INTERNAL_ACME_ADD_SUBDIRECTORY int_sub_dir_name)
 	MESSAGE(VERBOSE INTERNAL_ACME_ADD_SUBDIRECTORY "adding subdirectory ${int_sub_dir_name}")
 	SET(CURRENT_MODULE_NAME "${int_sub_dir_name}")
 	ADD_SUBDIRECTORY("${int_sub_dir_name}")
 	INTERNAL_JUST_DOIT()
-ENDFUNCTION(INTERNAL_ACME_ADD_SUBDIRECTORY)
+ENDMACRO(INTERNAL_ACME_ADD_SUBDIRECTORY)
 
 
 FUNCTION(INTERNAL_ADD_CMAKE_PROJECT iaap_name)
@@ -293,6 +294,7 @@ MACRO(INTERNAL_TRY_TO_SATISFY_DEPENDENCY_USING_FIND_PACKAGE dep_name)
 	ENDIF()
 
     IF("${dep_name}_FOUND")
+
 
 		SET(${CURRENT_MODULE_NAME}_INCLUDE_DIRS ${${CURRENT_MODULE_NAME}_INCLUDE_DIRS} "${${dep_name}_INCLUDE_DIRS}" CACHE INTERNAL "")
 		SET(${CURRENT_MODULE_NAME}_PACKAGE_LIBS ${${CURRENT_MODULE_NAME}_PACKAGE_LIBS} ${${dep_name}_LIBRARIES} CACHE INTERNAL "")

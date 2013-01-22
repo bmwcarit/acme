@@ -14,20 +14,21 @@
 # limitations under the License.
 #
 
-FUNCTION(INTERNAL_JUST_DOIT)
-	
+# Must be a macro because of plugins. Implementation as function can lead to undefined behaviour
+MACRO(INTERNAL_JUST_DOIT)
+
 	MESSAGE(VERBOSE INTERNAL_JUST_DOIT "Building ${CURRENT_MODULE_NAME}")
 	#--------------------------------------------------------------------------
 	# Hook for external plugins
 	#--------------------------------------------------------------------------
-	
-	CALL_PLUGIN_DOIT_HOOKS()
-	
-	
+
+	CALL_PLUGIN_BEFORE_DOIT_HOOKS()
+
+
 	#--------------------------------------------------------------------------
 	# Set some local variables that are used within INTERNAL_JUST_DOIT
 	#--------------------------------------------------------------------------
-	
+
     INTERNAL_ADD_DEFINITION(TARGET_OS=${TARGET_OS})        # Adds the current TARGET_OS to every module (so that the definition can be used within code).
 	STRING(TOUPPER ${CURRENT_MODULE_NAME} CURRENT_UPPER_MODULE_NAME)
 	SET(CURRENT_MODULE_TYPE	${${CURRENT_MODULE_NAME}_MODULE_TYPE})
@@ -119,8 +120,9 @@ FUNCTION(INTERNAL_JUST_DOIT)
 		INTERNAL_COPY_INSTALL_FILES()			# copies files within "${CURRENT_MODULE_NAME}_INSTALL_FILES" to the output directory defined by "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}"
 		INTERNAL_COPY_TARGETS()				# copies the targets to CMAKE_INSTALL_PREFIX/<bin|lib>
 	ENDIF()
-	
-ENDFUNCTION(INTERNAL_JUST_DOIT)
+
+	CALL_PLUGIN_AFTER_DOIT_HOOKS()
+ENDMACRO(INTERNAL_JUST_DOIT)
 
 
 MACRO(INTERNAL_COLLECT_DEPENDENCIES)
