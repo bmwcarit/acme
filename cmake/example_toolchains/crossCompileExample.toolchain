@@ -1,0 +1,64 @@
+#
+# Copyright (C) 2012 BMW Car IT GmbH
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+INCLUDE(CMakeForceCompiler)
+
+SET(CMAKE_SYSTEM_NAME <SystemName>)
+
+SET(TARGET_OS <target os>)
+SET(TARGET_ARCH <target arch>)
+SET(TARGET_COMPILER GCC)
+
+#set c compiler and flags
+SET(CMAKE_C_COMPILER <C cross compiler>)
+SET(CMAKE_C_FLAGS_DEBUG "-g -D_DEBUG")
+SET(CMAKE_C_FLAGS_RELEASE "-O3 -DNDEBUG")
+
+#set c++ compiler and flags
+SET(CMAKE_CXX_COMPILER "C++ cross compiler")
+SET(CMAKE_CXX_FLAGS_DEBUG "-g -D_DEBUG")
+SET(CMAKE_CXX_FLAGS_RELEASE "-O3 -DNDEBUG")
+
+#set linker
+SET(CMAKE_LINKER       "<cross linker>"  CACHE PATH "Linker Program")
+
+#set make
+SET(CMAKE_MAKE_PROGRAM "<cross make>"    CACHE PATH "Make Program")
+
+#set other tools
+SET(CMAKE_AR           "<cross ar>"      CACHE PATH "ar Program")
+SET(CMAKE_NM           "<cross nm>"      CACHE PATH "nm Program")
+SET(CMAKE_OBJCOPY      "<cross objcopy>" CACHE PATH "objcopy Program")
+SET(CMAKE_OBJDUMP      "<cross objdump>" CACHE PATH "objdump Program")
+SET(CMAKE_RANLIB       "<cross ranlib>"  CACHE PATH "ranlib Program")
+SET(CMAKE_SH           "<cross shell>"   CACHE PATH "shell Program")
+SET(CMAKE_STRIP        "<cross strip>"   CACHE PATH "Strip Program")
+
+#set target environment
+SET(CMAKE_FIND_ROOT_PATH "<target sys root>")
+
+# search for programs in the build host directories only
+SET(CMAKE_FIND_ROOT_PATH_MODE_PROGRAM NEVER)
+SET(CMAKE_FIND_ROOT_PATH_MODE_LIBRARY ONLY)
+SET(CMAKE_FIND_ROOT_PATH_MODE_INCLUDE ONLY)
+
+ADD_DEFINITIONS("-DTARGET_OS=<target OS>")
+ADD_DEFINITIONS("-DTARGET_ARCH=<target arch>")
+ADD_DEFINITIONS("-DOS_<target OS>")
+ADD_DEFINITIONS("-D<target arch>")
+
+# necessary for gmock
+ADD_DEFINITIONS("-DGTEST_HAS_PTHREAD=1")

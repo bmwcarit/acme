@@ -1,0 +1,16 @@
+#ifndef ${moduleName}_${fileName}_h
+#define ${moduleName}_${fileName}_h
+
+namespace ${projectName}
+{
+    class ${fileName}
+    {
+    public:
+        ${fileName}();
+        ~${fileName}();
+    protected:
+    private:
+    };
+}
+
+#endif // ${moduleName}_${fileName}_h

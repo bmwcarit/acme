@@ -1,0 +1,50 @@
+#
+# Copyright (C) 2012 BMW Car IT GmbH
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+##
+# @mainpage Overview
+# 
+# > ## ACME documentation
+#
+# This is the html documentation of the CMake Extension \a ACME. \n 
+# The section \b About \b ACME provides information about the benefits that the usage of \a ACME implies. \n
+# You get information on how to control the build process by setting different cache variables. \n
+# The links to additional software are listed in the section \b Installation. \n
+# The section \b Getting \b Started explains the usage of \a ACME by means of a small sample project. \n
+# If you are looking for the ACME scripts, then refer to section \b Files. \n \n
+# 
+#
+# > ## What is ACME?	
+# 
+# \a ACME is an extension to the open source build system <a href="http://www.cmake.org/" target="_blank">CMake</a>. \n
+# It provides several CMake scripts which help the users to build their projects. The provided [ACME functions](@ref ACME_ADD_CMAKE_PROJECT) are invoked by the user \n
+# in their \a CMakeLists.txt. They set different cache variables, which are then committed to the CMake functions by the function [ACME_FINALIZE] (@ref ACME_FINALIZE). \n 
+#
+# Furthermore ACME provides additional information about the build to the user. Without additional effort the user gets a \b build \b report of the project. This report \n
+# contains a list of all classes, the class hierarchy, all include files. Furthermore it integrates a \b dependency \b graph of the used modules, external libararies and additional \n
+# CMake projects into the html build report. \n
+# Furthermore an analysis of the \b code \b coverage is executed by ACME.
+# \n \n
+#
+# > ## Why is ACME useful?
+#
+# \a ACME especially supports the developer at recurring activities when drafting a new project. It fulfils tasks like \b integrating \b tests, the \b configurations \b of \b flags,... \n
+# \a It supports \b cross \b compiling and different \b IDEs. \n
+# \a ACME is particularly helpful when creating dependencies to different projects. 
+#
+#
+#
+# 

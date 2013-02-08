@@ -1,0 +1,9 @@
+CMAKE_MINIMUM_REQUIRED(VERSION 2.8)
+
+PROJECT(${projectName})
+
+INCLUDE(cmake/ACME/acme.cmake)
+
+ACME_ADD_SUBDIRECTORY(modules)
+
+ACME_FINALIZE()

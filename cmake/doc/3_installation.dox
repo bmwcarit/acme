@@ -1,0 +1,46 @@
+#
+# Copyright (C) 2012 BMW Car IT GmbH
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+##
+# \page Installation
+# 
+# > ## Installation of ACME
+# \details
+# To add ACME to your project just link the file \a acme.cmake (in \a acme/cmake/) to your topmost \a CMakeList.txt. \n
+# Therefor use the cmake command `INCLUDE()` in the \a CMakeList.txt of your project source directory. \n \n
+# > ## Installation of Doxygen
+# In order to create a build report, ACME requires the additional software \a Doxygen. \n
+# Just install \a Doxygen into the standard directory of your operating system, ACME will autonomously search for executables. \n
+# If ACME couldn`t find \a Doxygen, you can add the path to the executable into the cache variable \"DOXYGEN_EXECUTABLE\" in the cmake GUI. \n
+# 
+# You can download Doxygen from the following Website: \n
+#   [Doxygen Binaries] (http://www.stack.nl/~dimitri/doxygen/download.html) 
+# \n \n
+# > ## Installation of Graphviz
+# ACME additionally requires the software \"dot\" to create the dependency graph of the build report.\n
+# Install \a Dot into the standard directory of your operating system. Therefor you can use the binaries of the programm \"Graphiz\" (Graphviz contains Dot). \n
+# If ACME couldn`t find \a Dot, you can add the path to the executable into the cache variable \"DOXYGEN_DOT_EXECUTABLE\" in the cmake GUI. \n 
+# 
+# Download the install packages for Windows here: \n
+#   [Windows Install packages] (http://www.graphviz.org/Download_windows.php) \n
+# Download the install packages for Linux here: \n
+#	[rpms for Redhat Enterprise, or Centos systems] (http://www.graphviz.org/Download_linux_rhel.php) \n
+# 	[rpms for Fedora systems] (http://www.graphviz.org/Download_linux_fedora.php) \n
+#	[debs for Ubuntu systems] (http://www.graphviz.org/Download_linux_ubuntu.php) \n
+# Download the install packages for Mac here: \n	
+#  [Mac OS Install packages] (http://www.graphviz.org/Download_macos.php)
+#
+#

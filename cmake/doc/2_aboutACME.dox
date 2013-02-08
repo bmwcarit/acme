@@ -1,0 +1,75 @@
+#
+# Copyright (C) 2012 BMW Car IT GmbH
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+##
+# @page "About ACME"
+# 
+# > ## Services of ACME
+# 
+# \a ACME offers a large number of services to the user: \n
+# <ul>
+# <li type=square>a collection of useful \a ACME functions (see also section [ACME_API](@ref ACME_ADD_CMAKE_PROJECT))
+# <li type=square>\b cross \b compiling out of the box
+# <li type=square>integration of \b GoogleTest
+# <li type=square>integration of \b GoogleMock
+# <li type=square>a reasonable, given \b project \b structure
+# <li type=square>mechanisms to automatically build dependent projects
+# <li type=square>automatic development of the release
+# <li type=square>automatic generation of a \b build \b report
+# <li type=square>automatic generation of a \b dependency \b graph (which is integrated into the build report)
+# <li type=square>automatic generation of a \b code \b coverage report
+# </ul>
+# \n
+# > ## Structure of an ACME project
+#
+# <img src="project_structure.png" align="left" vspace="10" hspace="20" alt="project_structure">
+#
+# <p>\n This image shows the common \b project \b structure of an \a ACME project. \n
+# CMake files that are used to identify the needed packages, are saved into the subdirectory \b "cmake/modules". \n
+# Into the folder \b "plugins" you can deposit files that look for additional cmake projects. \n
+# The individual modules of your project should be saved into the \b "modules" folder. \n
+# They can consist of an \b "include" directory (to save the header files), 
+# a \b "res" folder (to save files of the ld command language), a \b "src" folder for the cpp files and an optional \b "test" directory for the test files. \n
+# <br clear="all"></p>
+# \n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n
+#
+# <img src="deliverable_structure.png" align="left" vspace="10" hspace="20" alt="deliverable_structure">
+#
+# <p>\n The deliverable structure is constructed as follows. \n
+# The deliverable folder of all built additional cmake projects are saved into the deliverable folder of the current project. \n
+# Every deliverable directory consists of a \b "bin" folder, where the debug and release executables are saved by \a ACME. \n
+# In an additional \b "doc" directory the generated build report (with dependency graph and code coverage) are deposited. \n
+# Furhtermore there exists a \b "lib" directory for the libraries and a \b "res" folder.
+# <br clear="all"></p>
+# \n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n
+# 
+# > ## Build report
+# 
+# If the cache variable `CONFIG_CREATE_BUILD_REPORT` is set to "TRUE" and the tool \b "Doxygen" (see section [Installation](@ref Installation)) has been found, \n
+# \a ACME automatically creates a build report of the current projects. \a ACME will automatically look for "Doxygen" and print the current status. \n
+# You can find the build report by searching for the file `index.html` in "doc/html" of the deliverable folder of the built project. \n \n
+# This report contains a list of all classes, the class hierarchy and all include files. \n\n
+# 
+# > ## Dependency graph
+#
+# To integrate the dependency graph of your project into the above mentioned build report, set the cache variable `CONFIG_CREATE_DEPENDENCY_GRAPH` to "TRUE" \n
+# and install the tool \b "Graphviz" (see section [Installation](@ref Installation)) into the standard directory of your operating systems. \a ACME will automatically look for this tool and print the current status. \n
+# Additionally \a ACME saves a copy of the dependency graph of the format \a png into the "doc" folder of the current deliverable directory. \n \n
+# 
+# > ## Documentation
+#
+# In order to provide project documentation, just add a \b Doxyfile.in in a folder named \b doc directly in your root directory. A documentation target will come up which builds doxygen documentation. If you put dox files in the folder as well, these will get included, too.
+#

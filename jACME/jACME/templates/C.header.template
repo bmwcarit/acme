@@ -1,0 +1,6 @@
+#ifndef ${moduleName}_${fileName}_h
+#define ${moduleName}_${fileName}_h
+
+// add your code here...
+
+#endif // ${moduleName}_${fileName}_h

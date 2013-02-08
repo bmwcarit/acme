@@ -1,0 +1,20 @@
+#ifndef ${moduleName}_${fileName}_Test_h
+#define ${moduleName}_${fileName}_Test_h
+
+#include "gmock/gmock.h"
+#include "${includePath}"
+
+namespace ${projectName}
+{
+    class ${fileName}Test : public testing::Test
+    {
+    public:
+        ${fileName}Test();
+        ~${fileName}Test();
+        void SetUp();
+        void TearDown();
+    protected:
+    };
+}
+
+#endif // ${moduleName}_${fileName}_Test_h
