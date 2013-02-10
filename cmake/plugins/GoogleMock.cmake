@@ -25,9 +25,8 @@ ELSE()
 						INCLUDE_DIRS "src/GoogleMock/include" "src/GoogleMock/gtest/include" 
 						URL "${CONFIG_GTEST_URL}"
 						CHECKSUM "f547f47321ca88d3965ca2efdcc2a3c1"
-						#CMAKE_ARGUMENTS "gtest_force_shared_crt:Bool=1" "CMAKE_C_FLAGS:STRING=${CMAKE_C_FLAGS_DEBUG}" "CMAKE_CXX_FLAGS:STRING=${CMAKE_CXX_FLAGS_DEBUG}"
 						CMAKE_ARGUMENTS "gtest_force_shared_crt:Bool=1"
-						REQUIRED_PACKAGES "Rt" "Thread"
+						REQUIRED_PACKAGES "LibRt" "Threads"
 						)
 
 ENDIF()

@@ -367,18 +367,32 @@ FUNCTION(INTERNAL_REQUIRED_PACKAGE pkg_name)
 	PRINT_DETAILS(STATUS "${CURRENT_MODULE_NAME} requires package ${pkg_name}")
 	SET(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake/modules")
 
-	IF(NOT "${pkg_name}_FOUND" AND EXISTS "${CMAKE_MODULE_PATH}/Find${pkg_name}.cmake")
-		find_package("${pkg_name}" REQUIRED)
-        SET( ${pkg_name}_FOUND "NO" )
-        IF(DEFINED ${pkg_name}_INCLUDE_DIRS)
-            SET( ${pkg_name}_FOUND "YES" )
-            MARK_AS_ADVANCED(
-                             ${pkg_name}_INCLUDE_DIRS
-                             ${pkg_name}_LIBRARIES
-                             ${pkg_name}_LIBRARY_DIRS
-                            )
-	    ENDIF()
-    ENDIF()
+	IF(NOT "${pkg_name}_FOUND" )
+		SET(CMAKE_MODULE_PATH_DEFAULT ${CMAKE_MODULE_PATH})
+		SET(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake/modules")
+		
+		UNSET(${pkg_name}_INCLUDE_DIRS)
+		
+		find_package(${pkg_name} QUIET)
+		
+		IF(DEFINED ${pkg_name}_INCLUDE_DIRS)
+			SET(${pkg_name}_FOUND "YES")
+		ENDIF()
+		
+		SET(CMAKE_MODULE_PATH "${CMAKE_MODULE_PATH_DEFAULT}")
+
+		IF(NOT "${pkg_name}_FOUND")
+			find_package(${pkg_name} QUIET)
+		ENDIF()
+
+		IF("${pkg_name}_FOUND")
+			MARK_AS_ADVANCED(
+						 ${pkg_name}_INCLUDE_DIRS
+						 ${pkg_name}_LIBRARIES
+						 ${pkg_name}_LIBRARY_DIRS
+						)
+		ENDIF()
+	ENDIF()
 
     IF("${pkg_name}_FOUND")
 
