@@ -564,6 +564,8 @@ FUNCTION(INTERNAL_ADD_DEPENDENCY ad_name)
 		INTERNAL_ADD_RELEASE_DEFINITION("${${ad_name}_DEPENDENT_RELEASE_DEFINITIONS}")
 		INTERNAL_ADD_RELEASE_DEFINITION("${${ad_name}_RELEASE_DEFINITIONS}")
 		
+		INTERNAL_LINK_LIBRARY(${ad_name})
+		
 	ELSE()
 		MESSAGE(STATUS "WARNING: Required package '${ad_name}' was not found.")
 		MESSAGE(STATUS "WARNING: Build of '${CURRENT_MODULE_NAME}' was disabled.")
@@ -789,11 +791,13 @@ FUNCTION(INTERNAL_LINK_LIBRARY ill_library)
 	#IF(${FOUND_LIBRARY} EQUAL -1)
 	#	MESSAGE(FATAL_ERROR "You tried to link against the unknown lib ${ill_library}")
 	#ENDIF()
-	SET(${CURRENT_MODULE_NAME}_LIBRARIES 	${${CURRENT_MODULE_NAME}_LIBRARIES} 		${ill_library} ${ARGN} 				CACHE INTERNAL "")
-	SET(GLOBAL_MODULE_LIBRARIES 			${GLOBAL_MODULE_LIBRARIES} 					${CURRENT_MODULE_NAME}_LIBRARIES 	CACHE INTERNAL "global list of all variables which store the libraries of the specific module")	
+	IF(${${ill_library}_HAS_SOURCE_FILES})
+		SET(${CURRENT_MODULE_NAME}_LIBRARIES 	${${CURRENT_MODULE_NAME}_LIBRARIES} 		${ill_library} ${ARGN} 				CACHE INTERNAL "")
+		SET(GLOBAL_MODULE_LIBRARIES 			${GLOBAL_MODULE_LIBRARIES} 					${CURRENT_MODULE_NAME}_LIBRARIES 	CACHE INTERNAL "global list of all variables which store the libraries of the specific module")	
 
-	SET(${CURRENT_MODULE_NAME}_LIBRARY_DIRS	${${CURRENT_MODULE_NAME}_LIBRARY_DIRS} 		${ill_library} ${ARGN} 				CACHE INTERNAL "")
-	SET(GLOBAL_MODULE_LIBRARY_DIRS 			${GLOBAL_MODULE_LIBRARY_DIRS} 					${CURRENT_MODULE_NAME}_LIBRARY_DIRS 	CACHE INTERNAL "global list of all variables which store the library dirs of the specific module")	
+		SET(${CURRENT_MODULE_NAME}_LIBRARY_DIRS	${${CURRENT_MODULE_NAME}_LIBRARY_DIRS} 		${ill_library} ${ARGN} 				CACHE INTERNAL "")
+		SET(GLOBAL_MODULE_LIBRARY_DIRS 			${GLOBAL_MODULE_LIBRARY_DIRS} 					${CURRENT_MODULE_NAME}_LIBRARY_DIRS 	CACHE INTERNAL "global list of all variables which store the library dirs of the specific module")	
+	ENDIF()
 ENDFUNCTION(INTERNAL_LINK_LIBRARY)
 
 
