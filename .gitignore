@@ -1,5 +1,5 @@
 build/*
 3psw/*
-HelloACME/build/*
-HelloACME/3psw/*
-HelloACME/deliverable/*
+examples/HelloACME/build/*
+examples/HelloACME/3psw/*
+examples/HelloACME/deliverable/*
