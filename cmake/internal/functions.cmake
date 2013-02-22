@@ -753,6 +753,19 @@ FUNCTION(INTERNAL_REPORT)
 		INTERNAL_REPORT_MODULE(TYPE tests MODULES ${GLOBAL_UTILS_MODULES_TESTS})
 		MESSAGE(STATUS "-------------------------------------------------------------------")
 	ENDIF()
+
+	MESSAGE(STATUS)
+	MESSAGE(STATUS "Auto-configured install directories:")
+	MESSAGE(STATUS "- Headers:   ${CMAKE_HEADER_OUTPUT_DIRECTORY}")
+	MESSAGE(STATUS "- Libraries: ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}")
+	MESSAGE(STATUS "- Binaries:  ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}")
+	MESSAGE(STATUS)
+
+	MESSAGE(STATUS "-------------------------------------------------------------------")
+	MESSAGE(STATUS "------------------- Configuration report end ----------------------")
+	MESSAGE(STATUS "-------------------------------------------------------------------")
+	MESSAGE(STATUS)
+
 ENDFUNCTION(INTERNAL_REPORT)
 
 

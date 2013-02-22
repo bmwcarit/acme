@@ -437,8 +437,6 @@ ENDMACRO(INTERNAL_COPY_DOC_FILES)
 MACRO(INTERNAL_COPY_INSTALL_FILES)
 
 	IF(NOT "${${CURRENT_MODULE_NAME}_INSTALL_FILES}" STREQUAL "")
-		
-		
         FOREACH(file ${${CURRENT_MODULE_NAME}_INSTALL_FILES})
 			SET(subDir "")
 			IF (NOT "${${CURRENT_MODULE_NAME}_${file}_INSTALL_DIR}" STREQUAL "")
@@ -450,7 +448,7 @@ MACRO(INTERNAL_COPY_INSTALL_FILES)
 					"${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${subDir}"
                 )
 			ENDIF()
-			
+
             add_custom_command(TARGET ${CURRENT_MODULE_NAME} POST_BUILD
                 COMMAND ${CMAKE_COMMAND} -E copy_if_different
                 ${file}

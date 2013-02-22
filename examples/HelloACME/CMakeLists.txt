@@ -30,3 +30,5 @@ IF(NOT "ACME_ROOT_DIR-NOTFOUND" STREQUAL "${ACME_ROOT_DIR}")
 ELSE()
 	MESSAGE(FATAL_ERROR "ACME_ROOT_DIR not set. Specify the path to your ACME installation")
 ENDIF()
+
+ACME_FINALIZE()
