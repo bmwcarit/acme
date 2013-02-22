@@ -29,11 +29,14 @@ MESSAGE(VERBOSE "using ACME base directory: ${ACME_PATH}")
 # that all variables are set as early as possible.
 #--------------------------------------------------------------------------
 IF (NOT "${CMAKE_TOOLCHAIN_FILE}" STREQUAL "" )
+	IF(NOT IS_ABSOLUTE "${CMAKE_TOOLCHAIN_FILE}")
+		SET(CMAKE_TOOLCHAIN_FILE "${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_TOOLCHAIN_FILE}")
+	ENDIF()
 	IF (EXISTS "${CMAKE_TOOLCHAIN_FILE}")
-		INCLUDE(${CMAKE_TOOLCHAIN_FILE})
-		MESSAGE(VERBOSE "Using toolchain file: " ${CMAKE_TOOLCHAIN_FILE})
+		INCLUDE("${CMAKE_TOOLCHAIN_FILE}")
+		MESSAGE(STATUS "Using toolchain file: " ${CMAKE_TOOLCHAIN_FILE})
 	ELSE()
-		MESSAGE(WARNING "toolchain file not found: " ${CMAKE_TOOLCHAIN_FILE})
+		MESSAGE(FATAL_ERROR "WARNING: toolchain file not found: " ${CMAKE_TOOLCHAIN_FILE})
 	ENDIF()
 ENDIF()
 
@@ -43,9 +46,6 @@ ENDIF()
 
 INCLUDE(${ACME_PATH}/internal/config.cmake)
 INCLUDE(${ACME_PATH}/internal/functions.cmake)
-#INCLUDE(${ACME_PATH}/test/test.cmake)
-#INCLUDE(${ACME_PATH}/test/testcases.cmake)
-
 
 #--------------------------------------------------------------------------
 # Functions provided by ACME
