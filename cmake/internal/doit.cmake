@@ -75,9 +75,8 @@ FUNCTION(INTERNAL_JUST_DOIT)
 					ENDIF()			
 			
 					LINK_DIRECTORIES(${GoogleTest_LIBRARIES_DIR} ${GoogleMock_LIBRARIES_DIR} ${external_package_link_directories})
-					INCLUDE_DIRECTORIES(${intern_include_path} ${include_dirs} ${test_path})
-					INCLUDE_DIRECTORIES(SYSTEM ${GoogleTest_INCLUDE_DIRS} ${GoogleMock_INCLUDE_DIRS})
 					ADD_EXECUTABLE(${CURRENT_MODULE_NAME}Test ${${CURRENT_MODULE_NAME}_TEST_FILES} ${${CURRENT_MODULE_NAME}_TEST_MAIN})
+					SET_TARGET_PROPERTIES(${CURRENT_MODULE_NAME}Test PROPERTIES INCLUDE_DIRECTORIES "${intern_include_path};${include_dirs};${test_path};${GoogleTest_INCLUDE_DIRS};${GoogleMock_INCLUDE_DIRS}")
 					INTERNAL_ADD_FLAGS_TO_TEST_TARGET()
 
 					MESSAGE(STATUS "${CURRENT_MODULE_NAME} contains unit tests, building ${CURRENT_MODULE_NAME}Test")
