@@ -20,13 +20,18 @@ ELSE()
 	IF("${CONFIG_GTEST_URL}" STREQUAL "")
 		SET(CONFIG_GTEST_URL "http://googlemock.googlecode.com/files/gmock-1.6.0.zip")
 	ENDIF()
+
+	SET(NEEDED_LIBRARIES "Threads")
+	IF(NOT "${TARGET_OS}" STREQUAL Windows)
+		SET(NEEDED_LIBRARIES "${NEEDED_LIBRARIES} LibRt")
+	ENDIF()
 	ACME_ADD_CMAKE_PROJECT(	GoogleMock 
 						LIBNAMES gmock gtest
 						INCLUDE_DIRS "src/GoogleMock/include" "src/GoogleMock/gtest/include" 
 						URL "${CONFIG_GTEST_URL}"
 						CHECKSUM "f547f47321ca88d3965ca2efdcc2a3c1"
 						CMAKE_ARGUMENTS "gtest_force_shared_crt:Bool=1"
-						REQUIRED_PACKAGES "LibRt" "Threads"
+						REQUIRED_PACKAGES "${NEEDED_LIBRARIES}"
 						)
 
 ENDIF()
