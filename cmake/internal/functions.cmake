@@ -14,26 +14,6 @@
 # limitations under the License.
 #
 
-# Split arguments passed to a function into several lists separated by
-# specified identifiers that do not have an associated list e.g.:
-#
-# SET(arguments
-#   hello world
-#   LIST3 foo bar
-#   LIST1 fuz baz
-#   )
-# ARGUMENT_SPLITTER("${arguments}" "LIST1 LIST2 LIST3" ARG)
-#
-# results in 8 distinct variables:
-#  * ARG_DEFAULT_FOUND: 1
-#  * ARG_DEFAULT: hello;world
-#  * ARG_LIST1_FOUND: 1
-#  * ARG_LIST1: fuz;baz
-#  * ARG_LIST2_FOUND: 0
-#  * ARG_LIST2:
-#  * ARG_LIST3_FOUND: 1
-#  * ARG_LIST3: foo;bar
-
 #--------------------------------------------------------------------------
 # Including functions and macros that are used by the functions in functions.cmake
 #--------------------------------------------------------------------------
