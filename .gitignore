@@ -3,3 +3,6 @@ build/*
 examples/HelloACME/build/*
 examples/HelloACME/3psw/*
 examples/HelloACME/deliverable/*
+tests/TestProject/build
+tests/TestProject/3psw
+tests/TestProject/deliverable
