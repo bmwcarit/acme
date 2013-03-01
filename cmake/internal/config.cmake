@@ -27,7 +27,6 @@ ENDIF()
 # Initialize CMAKE variables
 
 IF(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
-	#SET(CMAKE_INSTALL_PREFIX "${PROJECT_SOURCE_DIR}/deliverable/${CMAKE_PROJECT_NAME}" CACHE PATH "install directory used by install, default: /usr/local on UNIX and c:/Program Files on Windows" FORCE )
 	SET(CMAKE_INSTALL_PREFIX "${GLOBAL_TOP_LEVEL_SOURCE_DIR}/deliverable" CACHE PATH "install directory used by install, default: /usr/local on UNIX and c:/Program Files on Windows" FORCE )
 ENDIF(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
 
@@ -53,8 +52,7 @@ SET(CONFIG_BUILD_UNITTESTS 					 1 	CACHE BOOL 	   "building Unit-Tests")
 SET(CONFIG_BUILD_GLOBAL_TEST_EXECUTABLE    	 0  CACHE BOOL     "enable building of one test executable")
 
 SET(GLOBAL_HEADER_FILE_EXTENSIONS 	"h;hpp;inc" 	CACHE STRING "file extension of header files.")
-SET(GLOBAL_SOURCE_FILE_EXTENSIONS 	"cpp;c" 		CACHE STRING "file extension of source files.")
-SET(GLOBAL_EXTERN_INCLUDE_DIRS      ""  			CACHE INTERNAL "collect extern include dirs")
+SET(GLOBAL_SOURCE_FILE_EXTENSIONS 	"cpp;c;cxx"		CACHE STRING "file extension of source files.")
 
 SET(GLOBAL_TEST_LIBS                ""  			CACHE INTERNAL "collect test libs")
 SET(GLOBAL_TEST_SOURCE              ""  			CACHE INTERNAL "collect test source")
@@ -67,54 +65,17 @@ SET(GLOBAL_TEST_RELEASE_LINKER_FLAGS      	""  CACHE INTERNAL "collect test link
 SET(GLOBAL_TEST_RELEASE_DEFINITIONS      	""  CACHE INTERNAL "collect test defintions")
 SET(GLOBAL_TEST_LINKER_DIRECTORIES  		""  CACHE INTERNAL "collect test linker directories")
 
-#SET(GLOBAL_INCLUDE_DIRECTORIES     		""  CACHE INTERNAL "collect include directories")
-#SET(GLOBAL_LIB_DIRECTORIES          		""  CACHE INTERNAL "collect lib directories")
-#SET(GLOBAL_LIBRARIES                		""  CACHE INTERNAL "collect all linkable libraries")
-
 SET(GLOBAL_UTILS_MODULES_STATIC  		"" CACHE INTERNAL "stores the module names of all static modules")
 SET(GLOBAL_UTILS_MODULES_DYNAMIC 		"" CACHE INTERNAL "stores the module names of all dynamic modules")
 SET(GLOBAL_UTILS_MODULES_EXE     		"" CACHE INTERNAL "stores the module names of all exe modules")
 SET(GLOBAL_UTILS_MODULES_TESTS   		"" CACHE INTERNAL "stores the module names of all tests modules")
 
-#SET(GLOBAL_OPTIONAL_FILES 				"" CACHE INTERNAL "global list of all variables which indicate whether an optional file is enabled")
-
 SET(GLOBAL_MODULE_NAMES					"" CACHE INTERNAL "global list of all module names")
-SET(GLOBAL_MODULE_DEPENDENCIES 			"" CACHE INTERNAL "global list of all variables which store the dependencies of the specific module")
-SET(GLOBAL_MODULE_LIBRARIES 			"" CACHE INTERNAL "global list of all variables which store the libraries of the specific module")
-SET(GLOBAL_MODULE_HAS_SOURCE_FILES 		"" CACHE INTERNAL "global list of all variables which indentifiy if the specific module has source files")
-SET(GLOBAL_MODULE_TYPE 					"" CACHE INTERNAL "global list of all variables which store the type of the specific module")
-SET(GLOBAL_MODULE_DIR 					"" CACHE INTERNAL "global list of all variables which store the directory of the specific module")
-SET(GLOBAL_MODULE_BUILD_ENABLED 		"" CACHE INTERNAL "global list of all variables which show if build is for the specific module enabled")
-#SET(GLOBAL_MODULE_COMPILE_FLAGS 		"" CACHE INTERNAL "global list of all variables which store the compile flags for the specific module")
-SET(GLOBAL_MODULE_DEBUG_COMPILER_FLAGS 	"" CACHE INTERNAL "global list of all variables which store the debug compiler flags for the specific module")
-SET(GLOBAL_MODULE_RELEASE_COMPILER_FLAGS "" CACHE INTERNAL "global list of all variables which store the release compiler flags for the specific module")
-#SET(GLOBAL_MODULE_LINKER_FLAGS 			"" CACHE INTERNAL "global list of all variables which store the linker flags for the specific module")
-SET(GLOBAL_MODULE_DEBUG_LINKER_FLAGS 	"" CACHE INTERNAL "global list of all variables which store the debug linker flags for the specific module")
-SET(GLOBAL_MODULE_RELEASE_LINKER_FLAGS 	"" CACHE INTERNAL "global list of all variables which store the release linker flags for the specific module")
-SET(GLOBAL_MODULE_DEBUG_DEFINITIONS 	"" CACHE INTERNAL "global list of all variables which store the debug definitions for the specific module")
-SET(GLOBAL_MODULE_RELEASE_DEFINITIONS 	"" CACHE INTERNAL "global list of all variables which store the release definitions for the specific module")
-SET(GLOBAL_MODULE_INSTALL_FILES 		"" CACHE INTERNAL "global list of all variables which identificate the install files for the specific module")
-SET(GLOBAL_MODULE_PACKAGE_LIBS 			"" CACHE INTERNAL "global list of all variables which identificate the package libaries for the specific module")
-SET(GLOBAL_MODULE_FOUND 				"" CACHE INTERNAL "global list of all variables which show that a specific module was found")
-SET(GLOBAL_MODULE_TEST_FILES			"" CACHE INTERNAL "global list of all variables which store the test files of the specific module")
-SET(GLOBAL_MODULE_SOURCE_FILES			"" CACHE INTERNAL "global list of all variables which store the source files of the specific module")
-SET(GLOBAL_MODULE_OPTIONAL_FILES 		"" CACHE INTERNAL "global list of variables which indicate if an optional file ist enabled or not")
 
-SET(GLOBAL_WITH_MODULE 					"" CACHE INTERNAL "global list of all used modules")
-SET(GLOBAL_BUILD_PROJECT 				"" CACHE INTERNAL "global list of all build variables of the added cmake projekts")
-
-SET(GLOBAL_EXTERNAL_LIBRARY_INCLUDE_DIR						"" CACHE INTERNAL "global list of all variables which indicate the include directory of external libraries")
 SET(GLOBAL_EXTERNAL_LIBRARY_LIBRARIES_DIR					"" CACHE INTERNAL "global list of all variables which indicate the library directory of external libraries")
 SET(GLOBAL_EXTERNAL_LIBRARY_LIBRARIES						"" CACHE INTERNAL "global list of all variables which indicate the libraries of external libraries")
-SET(GLOBAL_EXTERNAL_LIBRARY_DEPENDENT_DEBUG_DEFINITIONS		"" CACHE INTERNAL "global list of all variables which indicate the dependent debug definitions of external libraries")
-SET(GLOBAL_EXTERNAL_LIBRARY_DEPENDENT_RELEASE_DEFINITIONS	"" CACHE INTERNAL "global list of all variables which indicate the dependent release definitions of external libraries")
-SET(GLOBAL_EXTERNAL_LIBRARY_FOUND							"" CACHE INTERNAL "global list of all variables which indicate if an external library was found")
-SET(GLOBAL_EXTERNAL_LIBRARY_INTERNAL						"" CACHE INTERNAL "")
 
-SET(GLOBAL_PACKAGE_FOUND			""	CACHE INTERNAL	"global list of all variables which identificate the found packages")
-SET(GLOBAL_PACKAGE_INCLUDE_DIRS		"" 	CACHE INTERNAL	"global list of all variables which store the include directories of the found packages")
 SET(GLOBAL_PACKAGE_LIBRARIES		""	CACHE INTERNAL	"global list of all variables which store the libraries of the found packages")
 
 SET(GLOBAL_CMAKE_PROJECTS                   "" CACHE INTERNAL "global list of all added cmake project")
-SET(GLOBAL_CMAKE_PROJECTS_REQUIRED_PACKAGES "" CACHE INTERNAL "global list of all required packages that are used by a specific external cmake project")
 SET(GLOBAL_DEPENDENCY_EDGES "" CACHE INTERNAL "global list of all dependencies that are used to generate the dependency graph") 

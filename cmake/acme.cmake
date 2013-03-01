@@ -455,8 +455,6 @@ ENDFUNCTION(ACME_TEST)
 
 INCLUDE(${ACME_PATH}/internal/plugins.cmake)
 
-
-
 #
 # \page     ACME_API ACME_API
 # \section  
