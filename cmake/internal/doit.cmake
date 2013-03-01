@@ -16,6 +16,7 @@
 
 FUNCTION(INTERNAL_JUST_DOIT)
 	
+	MESSAGE(VERBOSE INTERNAL_JUST_DOIT "Building ${CURRENT_MODULE_NAME}")
 	#--------------------------------------------------------------------------
 	# Hook for external plugins
 	#--------------------------------------------------------------------------
@@ -79,7 +80,7 @@ FUNCTION(INTERNAL_JUST_DOIT)
 					SET_TARGET_PROPERTIES(${CURRENT_MODULE_NAME}Test PROPERTIES INCLUDE_DIRECTORIES "${intern_include_path};${include_dirs};${test_path};${GoogleTest_INCLUDE_DIRS};${GoogleMock_INCLUDE_DIRS}")
 					INTERNAL_ADD_FLAGS_TO_TEST_TARGET()
 
-					MESSAGE(STATUS "${CURRENT_MODULE_NAME} contains unit tests, building ${CURRENT_MODULE_NAME}Test")
+					MESSAGE(VERBOSE  "${CURRENT_MODULE_NAME} contains unit tests, building ${CURRENT_MODULE_NAME}Test")
 					TARGET_LINK_LIBRARIES(${CURRENT_MODULE_NAME}Test ${GoogleMock_LIBRARIES} ${GoogleTest_LIBRARIES} ${GoogleMock_PACKAGE_LIBS} ${GoogleTest_PACKAGE_LIBS} ${collected_dependencies_test})
 					ADD_DEPENDENCIES(${CURRENT_MODULE_NAME}Test GoogleMock ${CURRENT_MODULE_NAME})
 				ENDIF()	

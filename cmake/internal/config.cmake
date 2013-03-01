@@ -48,7 +48,7 @@ ENDIF()
 	
 # Define global cache-variables and set them to their default values
 
-SET(CONFIG_DETAILED_CONFIGURATION_REPORT	 0  CACHE BOOL     "enables a more detailed configuration report")   
+SET(CONFIG_VERBOSE	 0  CACHE BOOL     "enables a more verbose output of acme process")   
 SET(CONFIG_BUILD_UNITTESTS 					 1 	CACHE BOOL 	   "building Unit-Tests")
 SET(CONFIG_BUILD_GLOBAL_TEST_EXECUTABLE    	 0  CACHE BOOL     "enable building of one test executable")
 

@@ -38,7 +38,6 @@
 # Including functions and macros that are used by the functions in functions.cmake
 #--------------------------------------------------------------------------
 
-INCLUDE(${ACME_PATH}/internal/helpmethods.cmake)
 INCLUDE(${ACME_PATH}/internal/targetdefinitions.cmake)
 INCLUDE(${ACME_PATH}/internal/doit.cmake)
 INCLUDE(${ACME_PATH}/internal/hooks.cmake)
@@ -48,6 +47,7 @@ INCLUDE(${ACME_PATH}/internal/hooks.cmake)
 #--------------------------------------------------------------------------
 
 FUNCTION(INTERNAL_ACME_ADD_SUBDIRECTORY int_sub_dir_name)
+	MESSAGE(VERBOSE INTERNAL_ACME_ADD_SUBDIRECTORY "adding subdirectory ${int_sub_dir_name}")
 	SET(CURRENT_MODULE_NAME "${int_sub_dir_name}")
 	ADD_SUBDIRECTORY("${int_sub_dir_name}")
 	INTERNAL_JUST_DOIT()
@@ -55,7 +55,8 @@ ENDFUNCTION(INTERNAL_ACME_ADD_SUBDIRECTORY)
 
 
 FUNCTION(INTERNAL_ADD_CMAKE_PROJECT iaap_name)
-	PRINT_DETAILS(STATUS "Configuring build for external cmake project ${iaap_name}")
+	MESSAGE(VERBOSE INTERNAL_ADD_CMAKE_PROJECT "adding cmake project ${iaap_name}")
+	MESSAGE(VERBOSE "Configuring build for external cmake project ${iaap_name}")
 
 	IF(NOT DEFINED THIRD_PARTY_DIR)
 		SET(THIRD_PARTY_DIR ${PROJECT_SOURCE_DIR}/3psw)
@@ -69,20 +70,20 @@ FUNCTION(INTERNAL_ADD_CMAKE_PROJECT iaap_name)
 		SET(iaap_method DOWNLOAD_DIR "${THIRD_PARTY_DIR}/${iaap_name}"
 						URL          "${IAAP_URL}"
 						URL_MD5      "${IAAP_CHECKSUM}")
-						
+		MESSAGE(VERBOSE INTERNAL_ADD_CMAKE_PROJECT "Using download method for external project with url ${IAAP_URL}")
 	ELSEIF(NOT "${IAAP_SOURCE_DIR}" STREQUAL "")
 		INTERNAL_LIST_TO_STRING("${IAAP_SOURCE_DIR}" IAAP_CONVERTED_SOURCE_DIR)  
 		SET(IAAP_SOURCE_DIR "${IAAP_CONVERTED_SOURCE_DIR}")
 		SET(iaap_method SOURCE_DIR  "${IAAP_SOURCE_DIR}"
 								     DOWNLOAD_COMMAND "")
-
+		MESSAGE(VERBOSE INTERNAL_ADD_CMAKE_PROJECT "Using source directory for external project: ${IAAP_SOURCE_DIR}")
 	ELSEIF(EXISTS "${THIRD_PARTY_DIR}/${iaap_name}")
 		SET(IAAP_SOURCE_DIR "${THIRD_PARTY_DIR}/${iaap_name}")
 		SET(iaap_method SOURCE_DIR "${IAAP_SOURCE_DIR}"
-		                           DOWNLOAD_COMMAND "")	                           								   
+		                           DOWNLOAD_COMMAND "")	        
+		MESSAGE(VERBOSE INTERNAL_ADD_CMAKE_PROJECT "Using project-local third party dir source directory for external project: ${IAAP_SOURCE_DIR}")
 	ENDIF()
 	
-    
     # Adds the packages that are required by the external cmake project to the cache variable "GLOBAL_CMAKE_PROJECTS_REQUIRED_PACKAGES"
     IF(NOT "${IAAP_REQUIRED_PACKAGES}" STREQUAL "")
 	    SET(CURRENT_MODULE_NAME "${iaap_name}")
@@ -98,6 +99,7 @@ FUNCTION(INTERNAL_ADD_CMAKE_PROJECT iaap_name)
 		SET(BUILD_${iaap_name} 1 CACHE BOOL "Use ${iaap_name}")
 		SET(GLOBAL_BUILD_PROJECT ${GLOBAL_BUILD_PROJECT} BUILD_${iaap_name} CACHE INTERNAL "global list of all build variables of the added cmake projekts")
 		IF(${BUILD_${iaap_name}}) 
+			MESSAGE(VERBOSE "Going to build ${iaap_name}")
 			SET(ilts_cmake_arguments "")
 			FOREACH(ilts_cmake_argument ${IAAP_CMAKE_ARGUMENTS})
 				SET(ilts_cmake_arguments ${ilts_cmake_arguments} -D${ilts_cmake_argument})
@@ -118,7 +120,7 @@ FUNCTION(INTERNAL_ADD_CMAKE_PROJECT iaap_name)
 				SET(USE_LIBRARY_OUTPUT_DIRECTORY "${CMAKE_INSTALL_PREFIX}/${iaap_name}_${PROJECT_NAME}/lib/${TARGET_OS}_${TARGET_ARCH}${BUILD_TYPE}")
 			ELSE()
 				SET(USE_LIBRARY_OUTPUT_DIRECTORY "${IAAP_USE_LIBRARY_OUTPUT_DIRECTORY}")
-				MESSAGE(STATUS "Using custom library output dir: ${USE_LIBRARY_OUTPUT_DIRECTORY}")
+				MESSAGE(VERBOSE "Using custom library output dir: ${USE_LIBRARY_OUTPUT_DIRECTORY}")
 			ENDIF()
 
             IF("${IAAP_USE_RUNTIME_OUTPUT_DIRECTORY}" STREQUAL "")
@@ -126,6 +128,7 @@ FUNCTION(INTERNAL_ADD_CMAKE_PROJECT iaap_name)
 			ELSE()
                 SET(USE_RUNTIME_OUTPUT_DIRECTORY "${IAAP_USE_RUNTIME_OUTPUT_DIRECTORY}")
 			ENDIF()
+			MESSAGE(VERBOSE "Creating cmake external library for ${iaap_name}")
 			ExternalProject_Add(
 			  ${iaap_name}
 			  PREFIX ${GLOBAL_TOP_LEVEL_BINARY_DIR}/${iaap_name}_${PROJECT_NAME}
@@ -180,6 +183,8 @@ FUNCTION(INTERNAL_ADD_CMAKE_PROJECT iaap_name)
 			FOREACH(iaap_include_dir ${IAAP_ABSOLUTE_INCLUDE_DIRS})
 				SET(iacp_include_dirs "${iacp_include_dirs}" "${iaap_include_dir}")
 			ENDFOREACH()	
+		ELSE()
+			MESSAGE(VERBOSE "Not going to build ${iaap_name}")
 		ENDIF()
 
 		INTERNAL_ADD_EXTERNAL_LIBRARY( ${iaap_name} 
@@ -196,6 +201,7 @@ ENDFUNCTION(INTERNAL_ADD_CMAKE_PROJECT)
 
 
 FUNCTION(INTERNAL_ADD_EXTERNAL_LIBRARY ial_name)
+	MESSAGE(VERBOSE INTERNAL_ADD_EXTERNAL_LIBRARY "Adding library ${ial_name}")
 	INTERNAL_ARGUMENT_SPLITTER("${ARGN}" "INCLUDE_DIRS LIBRARY_DIRS LIBNAMES DEPENDENT_DEFINITIONS DEPENDENT_DEBUG_DEFINITIONS DEPENDENT_RELEASE_DEFINITIONS" IAL)
 
 	SET(GLOBAL_CMAKE_PROJECTS ${GLOBAL_CMAKE_PROJECTS} "${ial_name}" CACHE INTERNAL "global list of all added cmake project")
@@ -268,8 +274,8 @@ ENDFUNCTION(INTERNAL_ADD_EXTERNAL_LIBRARY)
 
 
 FUNCTION(INTERNAL_ADD_MODULE_INTERNAL ami_module_name ami_type)
-	PRINT(STATUS "---------------------------------------------------------------------------")
-	PRINT(STATUS "Configuring build for ${ami_module_name} (${ami_type})")
+	MESSAGE(VERBOSE  "---------------------------------------------------------------------------")
+	MESSAGE(VERBOSE  "Configuring build for ${ami_module_name} (${ami_type})")
 	
 	STRING(TOUPPER ${ami_type} CURRENT_MODULE_TYPE)
 	IF(NOT "${CURRENT_MODULE_NAME}" STREQUAL "")
@@ -361,7 +367,7 @@ ENDFUNCTION(INTERNAL_ADD_OPTIONAL_MODULE)
 
 
 FUNCTION(INTERNAL_TRY_TO_SATISFY_DEPENDENCY_USING_FIND_PACKAGE dep_name)
-	PRINT_DETAILS(STATUS "${CURRENT_MODULE_NAME} requires package ${dep_name}")
+	MESSAGE(VERBOSE  "${CURRENT_MODULE_NAME} is trying to find ${dep_name}")
 
 	IF(NOT "${dep_name}_FOUND" )
 		SET(CMAKE_MODULE_PATH_DEFAULT ${CMAKE_MODULE_PATH})
@@ -394,10 +400,7 @@ FUNCTION(INTERNAL_TRY_TO_SATISFY_DEPENDENCY_USING_FIND_PACKAGE dep_name)
 		SET(${CURRENT_MODULE_NAME}_PACKAGE_LIB_DIRS ${${CURRENT_MODULE_NAME}_PACKAGE_LIB_DIRS} ${${dep_name}_LIBRARY_DIRS} CACHE INTERNAL "")
 	
 	ELSE()
-		PRINT(STATUS "WARNING: Required dependency '${dep_name}' was not found.")
-		PRINT(STATUS "WARNING: Build of '${CURRENT_MODULE_NAME}' was disabled.")
-		PRINT(STATUS "WARNING: Make dependency '${dep_name}' known to acme to enable build of '${CURRENT_MODULE_NAME}' (e.g. findmodule, plugin, external project..).")
-		SET(${CURRENT_MODULE_NAME}_BUILD_ENABLED 0 CACHE INTERNAL "")
+		MESSAGE(VERBOSE "Could not satisfy required dependency '${dep_name}'.")
 	ENDIF()
 
 	SET(${dep_name}_FOUND 			${${dep_name}_FOUND}			CACHE INTERNAL "")
@@ -432,7 +435,7 @@ ENDFUNCTION(INTERNAL_TRY_TO_SATISFY_DEPENDENCY_USING_FIND_PACKAGE)
 
 
 FUNCTION(INTERNAL_OPTIONAL_PACKAGE pkg_name)
-	PRINT(STATUS "${CURRENT_MODULE_NAME} optionally requires package ${pkg_name}")
+	MESSAGE(VERBOSE "${CURRENT_MODULE_NAME} optionally requires package ${pkg_name}")
 
 	SET(CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake/modules/)
 	
@@ -449,7 +452,7 @@ FUNCTION(INTERNAL_OPTIONAL_PACKAGE pkg_name)
 		ENDIF()
 	
 	ELSE()
-		PRINT(STATUS "INFO: Optional package '${pkg_name}' was not found.")
+		MESSAGE("Optional package '${pkg_name}' was not found.")
 	ENDIF(${pkg_name}_FOUND)
 	
 	SET(${pkg_name}_FOUND 			${${pkg_name}_FOUND}			CACHE INTERNAL "")
@@ -527,10 +530,13 @@ ENDFUNCTION(INTERNAL_ADD_DEFINITION)
 
 
 FUNCTION(INTERNAL_ADD_DEPENDENCY ad_name)
+	MESSAGE(VERBOSE INTERNAL_ADD_DEPENDENCY "Adding dependency ${ad_name} to module ${CURRENT_MODULE_NAME}")
 	IF(NOT "${ad_name}_FOUND")
+		MESSAGE(VERBOSE INTERNAL_ADD_DEPENDENCY "Trying to satisfy dependency through find modules")
 		INTERNAL_TRY_TO_SATISFY_DEPENDENCY_USING_FIND_PACKAGE(${ad_name})
 	ENDIF()
 	IF("${ad_name}_FOUND")
+		MESSAGE(VERBOSE INTERNAL_ADD_DEPENDENCY "Dependency could be satisfied")
         SET(${CURRENT_MODULE_NAME}_DEPENDENCIES ${ad_name} ${${ad_name}_DEPENDENCIES} ${${CURRENT_MODULE_NAME}_DEPENDENCIES} CACHE INTERNAL "")
 		LIST(REMOVE_DUPLICATES ${CURRENT_MODULE_NAME}_DEPENDENCIES)
 		SET(${CURRENT_MODULE_NAME}_DEPENDENCIES ${${CURRENT_MODULE_NAME}_DEPENDENCIES} CACHE INTERNAL "")
@@ -559,11 +565,10 @@ FUNCTION(INTERNAL_ADD_DEPENDENCY ad_name)
 		
 		
 	ELSE()
-		MESSAGE(STATUS "WARNING: Required package '${ad_name}' was not found.")
-		MESSAGE(STATUS "WARNING: Build of '${CURRENT_MODULE_NAME}' was disabled.")
-		MESSAGE(STATUS "WARNING: Install package '${ad_name}' to enable build of '${CURRENT_MODULE_NAME}'.")
+		MESSAGE(WARNING "Required dependency '${ad_name}' was not found.")
+		MESSAGE(WARNING "Build of '${CURRENT_MODULE_NAME}' was disabled.")
+		MESSAGE(WARNING "Make dependency '${ad_name}' known to acme to enable build of '${CURRENT_MODULE_NAME}' (e.g. findmodule, plugin, external project..).")
 		SET(${CURRENT_MODULE_NAME}_BUILD_ENABLED 0 CACHE INTERNAL "")
-		
 	ENDIF()
 	#SET(${CURRENT_MODULE_NAME}_DEPENDENCIES ${${CURRENT_MODULE_NAME}_DEPENDENCIES} ${ad_name})
 	
@@ -681,7 +686,7 @@ FUNCTION(INTERNAL_ADD_FILE ac_name)
 	SET(ADD_FILE_CONDITIONS_MET 1)
 	FOREACH(CONDITION ${AC_CONDITIONS})
 		IF (NOT ${CONDITION})
-			PRINT(STATUS "Excluded class ${ac_name}, condition ${CONDITION} failed")
+			MESSAGE(VERBOSE  "Excluded class ${ac_name}, condition ${CONDITION} failed")
 			SET(ADD_FILE_CONDITIONS_MET 0)
 		ENDIF()
 	ENDFOREACH()
@@ -819,7 +824,7 @@ FUNCTION(INTERNAL_INSTALL_RESOURCES)
 	STRING(TOUPPER ${CURRENT_MODULE_NAME} CURRENT_UPPER_MODULE_NAME)
 	IF(${WITH_${CURRENT_UPPER_MODULE_NAME}} AND ${${CURRENT_MODULE_NAME}_BUILD_ENABLED})
 		INTERNAL_ARGUMENT_SPLITTER("${ARGN}" "FILES DESTINATION" RES)
-		MESSAGE(STATUS "install resource files to ${RES_DESTINATION}")
+		MESSAGE(VERBOSE "install resource files to ${RES_DESTINATION}")
 		INSTALL(FILES ${RES_FILES} DESTINATION ${RES_DESTINATION})
 	ENDIF()
 ENDFUNCTION(INTERNAL_INSTALL_RESOURCES)
@@ -847,7 +852,7 @@ FUNCTION(INTERNAL_BUILD_UNIT_TESTS)
 		LINK_DIRECTORIES(${GoogleTest_LIBRARIES_DIR} ${GoogleMock_LIBRARIES_DIR} ${GLOBAL_TEST_LINKER_DIRECTORIES})
 		INCLUDE_DIRECTORIES(SYSTEM ${GoogleTest_INCLUDE_DIRS} ${GoogleMock_INCLUDE_DIRS})
 		INCLUDE_DIRECTORIES(${GLOBAL_TEST_INCLUDE_DIRECTORIES})
-		MESSAGE(STATUS "Global unit test executable enabled, building Test")
+		MESSAGE(VERBOSE "Global unit test executable enabled, building Test")
 		ADD_EXECUTABLE(Test ${GLOBAL_TEST_SOURCE})
 
 		INTERNAL_ADD_COMPILER_FLAGS_TO_TARGET(Test ${GLOBAL_TEST_DEBUG_COMPILER_FLAGS} ${GLOBAL_TEST_RELEASE_COMPILER_FLAGS})
@@ -937,11 +942,6 @@ ENDFUNCTION(INTERNAL_REMOVE_DUPLICATES)
 
 
 FUNCTION(INTERNAL_REPORT)
-	MESSAGE(STATUS)
-	MESSAGE(STATUS "-------------------------------------------------------------------")
-	MESSAGE(STATUS "------------------- Configuration report begin --------------------")
-	MESSAGE(STATUS "-------------------------------------------------------------------")
-	
 	IF(NOT "${GLOBAL_UTILS_MODULES_STATIC}" STREQUAL "")
 		INTERNAL_REPORT_MODULE(TYPE static MODULES ${GLOBAL_UTILS_MODULES_STATIC})
 		MESSAGE(STATUS "-------------------------------------------------------------------")
@@ -961,9 +961,6 @@ FUNCTION(INTERNAL_REPORT)
 		INTERNAL_REPORT_MODULE(TYPE tests MODULES ${GLOBAL_UTILS_MODULES_TESTS})
 		MESSAGE(STATUS "-------------------------------------------------------------------")
 	ENDIF()
-	MESSAGE(STATUS "------------------- Configuration report end ----------------------")
-	MESSAGE(STATUS "-------------------------------------------------------------------")
-	MESSAGE(STATUS)
 ENDFUNCTION(INTERNAL_REPORT)
 
 

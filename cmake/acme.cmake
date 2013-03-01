@@ -15,33 +15,27 @@
 #
 
 #--------------------------------------------------------------------------
-# Enable message output
-#--------------------------------------------------------------------------
-
-SET(TEST_ENABLE_MESSAGES 1 CACHE INTERNAL "")
-
-#--------------------------------------------------------------------------
-# If a toolchain was provided and the toolchain file exists make sure,
-# that all variables are set as early as possible.
-#--------------------------------------------------------------------------
-
-IF (NOT "${CMAKE_TOOLCHAIN_FILE}" STREQUAL "" )
-	IF (EXISTS "${CMAKE_TOOLCHAIN_FILE}")
-		INCLUDE(${CMAKE_TOOLCHAIN_FILE})
-		MESSAGE(STATUS "Using toolchain file: " ${CMAKE_TOOLCHAIN_FILE})
-	ELSE()
-		MESSAGE(STATUS "WARNING: toolchain file not found: " ${CMAKE_TOOLCHAIN_FILE})
-	ENDIF()
-ENDIF()
-
-#--------------------------------------------------------------------------
 # Store the current path to acme build system.
 # There is the macro CMAKE_CURRENT_LIST_DIR, but it requires Cmake 2.8.3 or higher.
 # This solution works on CMake 2.6 as well.
 #--------------------------------------------------------------------------
-
 get_filename_component(ACME_PATH ${CMAKE_CURRENT_LIST_FILE} PATH) 
-MESSAGE(STATUS "using ACME base directory: ${ACME_PATH}")
+
+INCLUDE(${ACME_PATH}/internal/helpmethods.cmake)
+
+MESSAGE(VERBOSE "using ACME base directory: ${ACME_PATH}")
+#--------------------------------------------------------------------------
+# If a toolchain was provided and the toolchain file exists make sure,
+# that all variables are set as early as possible.
+#--------------------------------------------------------------------------
+IF (NOT "${CMAKE_TOOLCHAIN_FILE}" STREQUAL "" )
+	IF (EXISTS "${CMAKE_TOOLCHAIN_FILE}")
+		INCLUDE(${CMAKE_TOOLCHAIN_FILE})
+		MESSAGE(VERBOSE "Using toolchain file: " ${CMAKE_TOOLCHAIN_FILE})
+	ELSE()
+		MESSAGE(WARNING "toolchain file not found: " ${CMAKE_TOOLCHAIN_FILE})
+	ENDIF()
+ENDIF()
 
 #--------------------------------------------------------------------------
 # Include configurations, internal implementations and a test file

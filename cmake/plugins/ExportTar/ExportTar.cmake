@@ -92,7 +92,6 @@ ENDFUNCTION(INTERNAL_ACME_EXPORT_FILE)
 
 # collect everything for tar building
 FUNCTION(INTERNAL_BUILD_RELEASE_TAR)
-	MESSAGE(STATUS "Adding Tarfile export target")
 	# the top level target for building the tar
 	add_custom_target(ExportTar COMMENT "Exporting marked Files into a tar" )
 
@@ -102,6 +101,7 @@ FUNCTION(INTERNAL_BUILD_RELEASE_TAR)
 		get_filename_component(FILENAME "${fullFilePath}" NAME)
 		FOREACH(TARGET_DIR ${${TARGET_TO_COPY}_TARGETDIRS})
 			add_custom_command(TARGET ExportTar COMMAND ${CMAKE_COMMAND} -E copy_if_different "${fullFilePath}" "${TARGET_DIR}/${FILENAME}")
+		MESSAGE(STATUS "Adding Tarfile export target")
 		ENDFOREACH()
 	ENDFOREACH()
 

@@ -22,24 +22,20 @@ ENDIF()
 include(ExternalProject)
 find_package(PkgConfig)
 
-MESSAGE(STATUS "---------------------------------------------------------------------------")
-MESSAGE(STATUS "")
-MESSAGE(STATUS "Searching for plugins: ")
-MESSAGE(STATUS "")
+MESSAGE(STATUS "Loading plugins")
+
 FILE(GLOB_RECURSE ACME_PLUGINS ${ACME_PATH}/plugins/*.cmake)
 FOREACH(plugin ${ACME_PLUGINS})
-	MESSAGE(STATUS "Found acme plugin ${plugin}")
+	MESSAGE(VERBOSE "Found acme plugin ${plugin}")
 	INCLUDE(${plugin})
-	PRINT_DETAILS(STATUS "")
 ENDFOREACH()
 
 FILE(GLOB_RECURSE EXTERN_PLUGINS ${CMAKE_SOURCE_DIR}/cmake/plugins/*.cmake)
 FOREACH(plugin ${EXTERN_PLUGINS})
-	MESSAGE(STATUS "Found internal plugin ${plugin}")
+	MESSAGE(VERBOSE "Found internal plugin ${plugin}")
 	GET_FILENAME_COMPONENT(PLUGIN_NAME ${plugin} NAME_WE)
 	STRING(TOUPPER ${PLUGIN_NAME} PLUGIN_NAME)
 	INCLUDE(${plugin})
-	PRINT_DETAILS(STATUS "")
 ENDFOREACH()
 
 
