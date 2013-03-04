@@ -153,22 +153,6 @@ ENDFUNCTION(ACME_ADD_OPTIONAL_MODULE)
 
 ##
 # \page     ACME_API ACME_API
-# \section  ACME_REQUIRED_PACKAGE ACME_REQUIRED_PACKAGE
-# \text  	Looks for the file \a Find<pkg_name>.cmake in the cmake module path and adds the required include directories and \n
-# 			libraries to the build. The current module name is specified by the invoking \a CMakeList.txt.
-# \param    pkg_name name of the added package
-# \modifies ${pkg_name}_FOUND						\n
-#			${pkg_name}_INCLUDE_DIRS				\n
-#			${pkg_name}_LIBRARIES					\n
-#			${CURRENT_MODULE_NAME}_PACKAGE_LIBS		\n
-#			[${CURRENT_MODULE_NAME}_BUILD_ENABLED]	
-# \details 	--------------------------------------------------------------------------------------------------------------------\n \n
-FUNCTION(ACME_REQUIRED_PACKAGE pkg_name)
-	INTERNAL_REQUIRED_PACKAGE("${pkg_name}")
-ENDFUNCTION(ACME_REQUIRED_PACKAGE)
-
-##
-# \page     ACME_API ACME_API
 # \section  ACME_OPTIONAL_PACKAGE ACME_OPTIONAL_PACKAGE
 # \text  	Optionally searches for the file \a Find<pkg_name>.cmake in the cmake module path and adds the required include \n
 #			directories and libraries to the build. The current module name is specified by the invoking \a CMakeList.txt.

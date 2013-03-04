@@ -88,8 +88,7 @@ FUNCTION(INTERNAL_ADD_CMAKE_PROJECT iaap_name)
 	    SET(CURRENT_MODULE_NAME "${iaap_name}")
 	    SET(${iaap_name}_PACKAGES "" CACHE INTERNAL "")
 	    FOREACH(package ${IAAP_REQUIRED_PACKAGES})
-	        ACME_REQUIRED_PACKAGE("${package}")
-            SET(${iaap_name}_PACKAGES ${${iaap_name}_PACKAGES} "${package}" CACHE INTERNAL "")
+			INTERNAL_ADD_DEPENDENCY("${package}")
 	    ENDFOREACH()
 	    SET(GLOBAL_CMAKE_PROJECTS_REQUIRED_PACKAGES ${GLOBAL_CMAKE_PROJECTS_REQUIRED_PACKAGES} "${iaap_name}_PACKAGES" CACHE INTERNAL "global list of all required packages that are used by a specific external cmake project")   
 	ENDIF()
@@ -361,79 +360,75 @@ FUNCTION(INTERNAL_ADD_OPTIONAL_MODULE aom_module_name aom_type)
 ENDFUNCTION(INTERNAL_ADD_OPTIONAL_MODULE)
 
 
-FUNCTION(INTERNAL_REQUIRED_PACKAGE pkg_name)
-	PRINT_DETAILS(STATUS "${CURRENT_MODULE_NAME} requires package ${pkg_name}")
-	SET(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake/modules")
+FUNCTION(INTERNAL_TRY_TO_SATISFY_DEPENDENCY_USING_FIND_PACKAGE dep_name)
+	PRINT_DETAILS(STATUS "${CURRENT_MODULE_NAME} requires package ${dep_name}")
 
-	IF(NOT "${pkg_name}_FOUND" )
+	IF(NOT "${dep_name}_FOUND" )
 		SET(CMAKE_MODULE_PATH_DEFAULT ${CMAKE_MODULE_PATH})
 		SET(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake/modules")
 		
-		UNSET(${pkg_name}_INCLUDE_DIRS)
+		UNSET(${dep_name}_INCLUDE_DIRS)
 		
-		find_package(${pkg_name} QUIET)
+		find_package(${dep_name} QUIET)
 		
-		IF(DEFINED ${pkg_name}_INCLUDE_DIRS)
-			SET(${pkg_name}_FOUND "YES")
-		ENDIF()
 		
 		SET(CMAKE_MODULE_PATH "${CMAKE_MODULE_PATH_DEFAULT}")
 
-		IF(NOT "${pkg_name}_FOUND")
-			find_package(${pkg_name} QUIET)
+		IF(NOT "${dep_name}_FOUND")
+			find_package(${dep_name} QUIET)
 		ENDIF()
 
-		IF("${pkg_name}_FOUND")
+		IF("${dep_name}_FOUND")
 			MARK_AS_ADVANCED(
-						 ${pkg_name}_INCLUDE_DIRS
-						 ${pkg_name}_LIBRARIES
-						 ${pkg_name}_LIBRARY_DIRS
+						 ${dep_name}_INCLUDE_DIRS
+						 ${dep_name}_LIBRARIES
+						 ${dep_name}_LIBRARY_DIRS
 						)
 		ENDIF()
 	ENDIF()
 
-    IF("${pkg_name}_FOUND")
+    IF("${dep_name}_FOUND")
 
-		SET(${CURRENT_MODULE_NAME}_INCLUDE_DIRS ${${CURRENT_MODULE_NAME}_INCLUDE_DIRS} "${${pkg_name}_INCLUDE_DIRS}" CACHE INTERNAL "")
-		SET(${CURRENT_MODULE_NAME}_PACKAGE_LIBS ${${CURRENT_MODULE_NAME}_PACKAGE_LIBS} ${${pkg_name}_LIBRARIES} CACHE INTERNAL "")
-		SET(${CURRENT_MODULE_NAME}_PACKAGE_LIB_DIRS ${${CURRENT_MODULE_NAME}_PACKAGE_LIB_DIRS} ${${pkg_name}_LIBRARY_DIRS} CACHE INTERNAL "")
+		SET(${CURRENT_MODULE_NAME}_INCLUDE_DIRS ${${CURRENT_MODULE_NAME}_INCLUDE_DIRS} "${${dep_name}_INCLUDE_DIRS}" CACHE INTERNAL "")
+		SET(${CURRENT_MODULE_NAME}_PACKAGE_LIBS ${${CURRENT_MODULE_NAME}_PACKAGE_LIBS} ${${dep_name}_LIBRARIES} CACHE INTERNAL "")
+		SET(${CURRENT_MODULE_NAME}_PACKAGE_LIB_DIRS ${${CURRENT_MODULE_NAME}_PACKAGE_LIB_DIRS} ${${dep_name}_LIBRARY_DIRS} CACHE INTERNAL "")
 	
 	ELSE()
-		PRINT(STATUS "WARNING: Required package '${pkg_name}' was not found.")
+		PRINT(STATUS "WARNING: Required dependency '${dep_name}' was not found.")
 		PRINT(STATUS "WARNING: Build of '${CURRENT_MODULE_NAME}' was disabled.")
-		PRINT(STATUS "WARNING: Install package '${pkg_name}' to enable build of '${CURRENT_MODULE_NAME}'.")
+		PRINT(STATUS "WARNING: Make dependency '${dep_name}' known to acme to enable build of '${CURRENT_MODULE_NAME}' (e.g. findmodule, plugin, external project..).")
 		SET(${CURRENT_MODULE_NAME}_BUILD_ENABLED 0 CACHE INTERNAL "")
 	ENDIF()
 
-	SET(${pkg_name}_FOUND 			${${pkg_name}_FOUND}			CACHE INTERNAL "")
-	SET(${pkg_name}_INCLUDE_DIRS	${${pkg_name}_INCLUDE_DIRS}		CACHE INTERNAL "")
-	SET(${pkg_name}_LIBRARIES		${${pkg_name}_LIBRARIES}		CACHE INTERNAL "")	
-	SET(${pkg_name}_LIBRARY_DIRS	${${pkg_name}_LIBRARY_DIRS}		CACHE INTERNAL "")
+	SET(${dep_name}_FOUND 			${${dep_name}_FOUND}			CACHE INTERNAL "")
+	SET(${dep_name}_INCLUDE_DIRS	${${dep_name}_INCLUDE_DIRS}		CACHE INTERNAL "")
+	SET(${dep_name}_LIBRARIES		${${dep_name}_LIBRARIES}		CACHE INTERNAL "")	
+	SET(${dep_name}_LIBRARY_DIRS	${${dep_name}_LIBRARY_DIRS}		CACHE INTERNAL "")
 
-	LIST(REMOVE_ITEM "${pkg_name}_FOUND" "")
-	LIST(LENGTH "${pkg_name}_FOUND" list_length)
+	LIST(REMOVE_ITEM "${dep_name}_FOUND" "")
+	LIST(LENGTH "${dep_name}_FOUND" list_length)
 	IF(${list_length})
-	SET(GLOBAL_PACKAGE_FOUND			${GLOBAL_PACKAGE_FOUND}			"${pkg_name}_FOUND" 		CACHE INTERNAL	"global list of all variables which identificate the found packages")
+	SET(GLOBAL_PACKAGE_FOUND			${GLOBAL_PACKAGE_FOUND}			"${dep_name}_FOUND" 		CACHE INTERNAL	"global list of all variables which identificate the found packages")
 	ENDIF()
 	
-	LIST(REMOVE_ITEM "${pkg_name}_INCLUDE_DIRS" "")
-	LIST(LENGTH "${pkg_name}_INCLUDE_DIRS" list_length)
+	LIST(REMOVE_ITEM "${dep_name}_INCLUDE_DIRS" "")
+	LIST(LENGTH "${dep_name}_INCLUDE_DIRS" list_length)
 	IF(${list_length})
-	SET(GLOBAL_PACKAGE_INCLUDE_DIRS		${GLOBAL_PACKAGE_INCLUDE_DIRS} 	"${pkg_name}_INCLUDE_DIRS"	CACHE INTERNAL	"global list of all variables which store the include directories of the found packages")
+	SET(GLOBAL_PACKAGE_INCLUDE_DIRS		${GLOBAL_PACKAGE_INCLUDE_DIRS} 	"${dep_name}_INCLUDE_DIRS"	CACHE INTERNAL	"global list of all variables which store the include directories of the found packages")
 	ENDIF()
 	
-	LIST(REMOVE_ITEM "${pkg_name}_LIBRARIES" "")
-	LIST(LENGTH "${pkg_name}_LIBRARIES" list_length)
+	LIST(REMOVE_ITEM "${dep_name}_LIBRARIES" "")
+	LIST(LENGTH "${dep_name}_LIBRARIES" list_length)
 	IF(${list_length})
-	SET(GLOBAL_PACKAGE_LIBRARIES		${GLOBAL_PACKAGE_LIBRARIES}		"${pkg_name}_LIBRARIES"		CACHE INTERNAL	"global list of all variables which store the libraries of the found packages")
+	SET(GLOBAL_PACKAGE_LIBRARIES		${GLOBAL_PACKAGE_LIBRARIES}		"${dep_name}_LIBRARIES"		CACHE INTERNAL	"global list of all variables which store the libraries of the found packages")
 	ENDIF()
 
-	LIST(REMOVE_ITEM "${pkg_name}_LIBRARY_DIRS" "")
-	LIST(LENGTH "${pkg_name}_LIBRARY_DIRS" list_length)
+	LIST(REMOVE_ITEM "${dep_name}_LIBRARY_DIRS" "")
+	LIST(LENGTH "${dep_name}_LIBRARY_DIRS" list_length)
 	IF(${list_length})
-	SET(GLOBAL_PACKAGE_LIBRARY_DIRS		${GLOBAL_PACKAGE_LIBRARY_DIRS}		"${pkg_name}_LIBRARY_DIRS"		CACHE INTERNAL	"global list of all variables which store the library dirs of the found packages")
+	SET(GLOBAL_PACKAGE_LIBRARY_DIRS		${GLOBAL_PACKAGE_LIBRARY_DIRS}		"${dep_name}_LIBRARY_DIRS"		CACHE INTERNAL	"global list of all variables which store the library dirs of the found packages")
 	ENDIF()
-ENDFUNCTION(INTERNAL_REQUIRED_PACKAGE)
+ENDFUNCTION(INTERNAL_TRY_TO_SATISFY_DEPENDENCY_USING_FIND_PACKAGE)
 
 
 FUNCTION(INTERNAL_OPTIONAL_PACKAGE pkg_name)
@@ -442,14 +437,6 @@ FUNCTION(INTERNAL_OPTIONAL_PACKAGE pkg_name)
 	SET(CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake/modules/)
 	
 	find_package("${pkg_name}" REQUIRED)
-    SET( ${pkg_name}_FOUND "NO" )
-    IF(DEFINED ${pkg_name}_INCLUDE_DIRS)
-        SET( ${pkg_name}_FOUND "YES" )
-        MARK_AS_ADVANCED(
-                        ${pkg_name}_INCLUDE_DIRS
-                        ${pkg_name}_LIBRARIES
-                        )
-	ENDIF()
 	
 	IF(${pkg_name}_FOUND)
 		INCLUDE_DIRECTORIES(${${pkg_name}_INCLUDE_DIR})
@@ -540,6 +527,9 @@ ENDFUNCTION(INTERNAL_ADD_DEFINITION)
 
 
 FUNCTION(INTERNAL_ADD_DEPENDENCY ad_name)
+	IF(NOT "${ad_name}_FOUND")
+		INTERNAL_TRY_TO_SATISFY_DEPENDENCY_USING_FIND_PACKAGE(${ad_name})
+	ENDIF()
 	IF("${ad_name}_FOUND")
         SET(${CURRENT_MODULE_NAME}_DEPENDENCIES ${ad_name} ${${ad_name}_DEPENDENCIES} ${${CURRENT_MODULE_NAME}_DEPENDENCIES} CACHE INTERNAL "")
 		LIST(REMOVE_DUPLICATES ${CURRENT_MODULE_NAME}_DEPENDENCIES)

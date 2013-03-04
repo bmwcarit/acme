@@ -36,8 +36,11 @@ FUNCTION(INTERNAL_JUST_DOIT)
 		SET(${CURRENT_MODULE_NAME}_TEST_MAIN "${test_path}/main.cpp")
 	ENDIF()	
 	
+	INTERNAL_SET_GLOBAL_TEST_VARIABLES()
+	INTERNAL_SET_MODULE_SOURCE_FILES()						# adds files in the "res/" folders to "${CURRENT_UPPER_MODULE_NAME}_MODULE_SOURCE_FILES"
+	INTERNAL_DOIT_REMOVE_DUPLICATES()	  
 	IF(${WITH_${CURRENT_UPPER_MODULE_NAME}} AND ${${CURRENT_MODULE_NAME}_BUILD_ENABLED})
-		INTERNAL_SET_INTERN_INCLUDE_PATH()					# sets the local variable "intern_include_path"
+		# Everything that has to do with collecting things from dependencies
 		INTERNAL_COLLECT_DEPENDENCIES()						# sets the local variable "collected_dependencies"
 		INTERNAL_COLLECT_DEPENDENCIES_TEST()				# sets the local variable "collected_dependencies_test"
 		INTERNAL_COLLECT_DEPENDENCY_DIRS()					# sets the local variable "collected_dependency_dirs"
@@ -46,24 +49,9 @@ FUNCTION(INTERNAL_JUST_DOIT)
 		INTERNAL_COLLECT_RES_FILES()						# sets the local variable "resource_files"
 		INTERNAL_ADD_CORRECT_CMAKELIST()					# adds correct "CMakeList.txt" to "${CURRENT_UPPER_MODULE_NAME}_MODULE_SOURCE_FILES"
 		INTERNAL_COLLECT_PACKAGE_LINK_DIRECTORIES()			# sets the local variable "external_package_link_directories"
-	ENDIF()
-	
-	#--------------------------------------------------------------------------
-	# Set some global variables 
-	#--------------------------------------------------------------------------
-	
-	INTERNAL_SET_GLOBAL_TEST_VARIABLES()
-	INTERNAL_SET_MODULE_SOURCE_FILES()						# adds files in the "res/" folders to "${CURRENT_UPPER_MODULE_NAME}_MODULE_SOURCE_FILES"
-	INTERNAL_DOIT_REMOVE_DUPLICATES()	                
-
-	
-	#--------------------------------------------------------------------------
-	# Forward local variables to CMake commands
-	#--------------------------------------------------------------------------	
-	
-	IF(${WITH_${CURRENT_UPPER_MODULE_NAME}} AND ${${CURRENT_MODULE_NAME}_BUILD_ENABLED})
 		
 		IF(${${CURRENT_MODULE_NAME}_HAS_SOURCE_FILES})
+			# Create actual cmake target and add properties to them
 			LINK_DIRECTORIES(${GLOBAL_EXTERNAL_LIBRARY_LIBRARIES_DIR} ${collected_dependency_dirs})
 			INTERNAL_ADD_MODULE_TARGET()					# adds the "${${CURRENT_UPPER_MODULE_NAME}_MODULE_SOURCE_FILES}" to the generated library or executable target
 			INTERNAL_ADD_FLAGS_TO_MODULE_TARGET()			# adds compiler and linker flags as well as debug and release definitions to the library or executable target
@@ -74,6 +62,7 @@ FUNCTION(INTERNAL_JUST_DOIT)
 			ADD_CUSTOM_TARGET(${CURRENT_MODULE_NAME} SOURCES ${${CURRENT_UPPER_MODULE_NAME}_MODULE_SOURCE_FILES})
 		ENDIF()
 
+		# Test stuff
 		IF(NOT "${${CURRENT_MODULE_NAME}_TEST_FILES}" STREQUAL "")
 			IF(${CONFIG_BUILD_UNITTESTS})
 				IF(NOT ${CONFIG_BUILD_GLOBAL_TEST_EXECUTABLE})
@@ -98,25 +87,17 @@ FUNCTION(INTERNAL_JUST_DOIT)
 			ENDIF()
 		ENDIF()
 		
-	ENDIF()	
-		
-		
 	#--------------------------------------------------------------------------
 	# Define a grouping for sources in the makefile
 	#--------------------------------------------------------------------------	
 		
-	IF(${WITH_${CURRENT_UPPER_MODULE_NAME}} AND ${${CURRENT_MODULE_NAME}_BUILD_ENABLED})
 		INTERNAL_GROUP_PUBLIC_HEADERS()			# adds "publicHeaders" to the source group "Public Header Files"
 		INTERNAL_GROUP_RES_FILES()				# adds the "${resource_files}" to the source group "Resource files"
 		INTERNAL_ADD_SOURCE_GROUPS()			# adds the source groups within "${CURRENT_MODULE_NAME}_SOURCE_GROUPS" to the solution
-	ENDIF()
-		
-		
+
 	#--------------------------------------------------------------------------
 	# Copy files to output directory
-	#--------------------------------------------------------------------------			
 	
-	IF(${WITH_${CURRENT_UPPER_MODULE_NAME}} AND ${${CURRENT_MODULE_NAME}_BUILD_ENABLED})
 		INTERNAL_COPY_HEADER_FILES()			# copies public header files to the output directory defined by "${CMAKE_HEADER_OUTPUT_DIRECTORY}"
 		INTERNAL_COPY_RESOURCE_FILES()			# copies resource files to the output directory defined by "${CMAKE_RESOURCE_OUTPUT_DIRECTORY}"
 		INTERNAL_COPY_DOC_FILES()				# copies documentation files to the output directory defined by "${CMAKE_DOC_OUTPUT_DIRECTORY}"	
@@ -126,11 +107,6 @@ FUNCTION(INTERNAL_JUST_DOIT)
 ENDFUNCTION(INTERNAL_JUST_DOIT)
 
 
-MACRO(INTERNAL_SET_INTERN_INCLUDE_PATH)
-	SET(intern_include_path ${CMAKE_CURRENT_SOURCE_DIR}/${CURRENT_MODULE_NAME}/include)
-ENDMACRO(INTERNAL_SET_INTERN_INCLUDE_PATH)
-
-
 MACRO(INTERNAL_COLLECT_DEPENDENCIES)
 	SET(collected_dependencies "${${CURRENT_MODULE_NAME}_LIBRARIES}" "${${CURRENT_MODULE_NAME}_PACKAGE_LIBS}")
 	LIST(REMOVE_ITEM collected_dependencies "")
@@ -138,7 +114,7 @@ MACRO(INTERNAL_COLLECT_DEPENDENCIES)
 	IF(${${CURRENT_MODULE_NAME}_HAS_SOURCE_FILES})
 		IF(NOT "${${CURRENT_MODULE_NAME}_DEPENDENCIES}" STREQUAL "")
 			FOREACH(current_dependency ${${CURRENT_MODULE_NAME}_DEPENDENCIES})
-				SET(collected_dependencies ${collected_dependencies} ${${current_dependency}_PACKAGE_LIBS})
+				SET(collected_dependencies ${collected_dependencies} ${${current_dependency}_PACKAGE_LIBS} ${current_dependency})
 			ENDFOREACH()	
 			
 			LIST(LENGTH collected_dependencies jd_length)
@@ -221,7 +197,8 @@ ENDMACRO(INTERNAL_COLLECT_DEPENDENCY_DIRS_TEST)
 
 
 MACRO(INTERNAL_COLLECT_INCLUDE_DIRS)
-	SET(include_dirs ${${CURRENT_MODULE_NAME}_INCLUDE_DIRS})
+	SET(LOCAL_MODULE_INCLUDE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/${CURRENT_MODULE_NAME}/include)
+	SET(include_dirs ${${CURRENT_MODULE_NAME}_INCLUDE_DIRS} ${LOCAL_MODULE_INCLUDE_PATH})
 	FOREACH(dependency ${${CURRENT_MODULE_NAME}_DEPENDENCIES})
 		IF(EXISTS "${PROJECT_SOURCE_DIR}/modules/${dependency}/include")
 			SET(include_dirs ${include_dirs} "${PROJECT_SOURCE_DIR}/modules/${dependency}/include")
@@ -270,6 +247,7 @@ MACRO(INTERNAL_ADD_MODULE_TARGET)
 		${${CURRENT_UPPER_MODULE_NAME}_MODULE_SOURCE_FILES}
 		)
 		SET(GLOBAL_EXTERNAL_LIBRARY_LIBRARIES ${GLOBAL_EXTERNAL_LIBRARY_LIBRARIES} ${CURRENT_MODULE_NAME}  CACHE INTERNAL "global list of all variables which indicate the libraries of external libraries")
+		SET(${CURRENT_MODULE_NAME}_LIBRARIES ${CURRENT_MODULE_NAME})
 			
 	ELSEIF("${CURRENT_MODULE_TYPE}" STREQUAL "DYNAMIC")
 		#SET(GLOBAL_UTILS_MODULES_DYNAMIC ${GLOBAL_UTILS_MODULES_DYNAMIC} ${CURRENT_MODULE_NAME} CACHE INTERNAL "stores the module names of all dynamic modules")
@@ -277,6 +255,7 @@ MACRO(INTERNAL_ADD_MODULE_TARGET)
 		SHARED
 		${${CURRENT_UPPER_MODULE_NAME}_MODULE_SOURCE_FILES}
 		)
+		SET(${CURRENT_MODULE_NAME}_LIBRARIES ${CURRENT_MODULE_NAME})		
 				
 	ELSEIF("${CURRENT_MODULE_TYPE}" STREQUAL "EXE")
 		#SET(GLOBAL_UTILS_MODULES_EXE ${GLOBAL_UTILS_MODULES_EXE} ${CURRENT_MODULE_NAME} CACHE INTERNAL "stores the module names of all exe modules")
@@ -316,7 +295,13 @@ ENDMACRO(INTERNAL_ADD_DEPENDENCIES_TO_MODULE_TARGET)
 
 MACRO(INTERNAL_LINK_LIBRARIES_TO_MODULE_TARGET)
 	IF(NOT "${${CURRENT_MODULE_NAME}_LIBRARIES}" STREQUAL "" AND NOT "${CURRENT_MODULE_TYPE}" STREQUAL "STATIC")
-		TARGET_LINK_LIBRARIES(${CURRENT_MODULE_NAME} ${collected_dependencies} ${${CURRENT_MODULE_NAME}_LIBRARIES})
+		# build list of all libraries of all collected deps
+		SET(LIBS_OF_ALL_DEPENDENCIES "")
+		FOREACH(currentDep ${collected_dependencies})
+			SET(CURRENT_LIBS ${${currentDep}_LIBRARIES})
+			SET(LIBS_OF_ALL_DEPENDENCIES ${LIBS_OF_ALL_DEPENDENCIES} ${CURRENT_LIBS} CACHE INTERNAL "")
+		ENDFOREACH()
+		TARGET_LINK_LIBRARIES(${CURRENT_MODULE_NAME} ${LIBS_OF_ALL_DEPENDENCIES} ${${CURRENT_MODULE_NAME}_LIBRARIES})
 	ENDIF()
 ENDMACRO(INTERNAL_LINK_LIBRARIES_TO_MODULE_TARGET)
 
