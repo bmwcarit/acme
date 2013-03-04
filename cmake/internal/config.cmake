@@ -118,18 +118,3 @@ SET(GLOBAL_PACKAGE_LIBRARIES		""	CACHE INTERNAL	"global list of all variables wh
 SET(GLOBAL_CMAKE_PROJECTS                   "" CACHE INTERNAL "global list of all added cmake project")
 SET(GLOBAL_CMAKE_PROJECTS_REQUIRED_PACKAGES "" CACHE INTERNAL "global list of all required packages that are used by a specific external cmake project")
 SET(GLOBAL_DEPENDENCY_EDGES "" CACHE INTERNAL "global list of all dependencies that are used to generate the dependency graph") 
-
-
-# Reset used files
-
-IF(EXISTS ${CMAKE_CURRENT_BINARY_DIR}/Hooks/FinalizeHooksTemp.cmake)
-	FILE(REMOVE ${CMAKE_CURRENT_BINARY_DIR}/Hooks/FinalizeHooksTemp.cmake)
-ENDIF()
-
-IF(EXISTS ${CMAKE_BINARY_DIR}/Hooks/DependencyHooksTemp.cmake)
-	FILE(REMOVE ${CMAKE_BINARY_DIR}/Hooks/DependencyHooksTemp.cmake)
-ENDIF()
-
-IF(EXISTS ${CMAKE_BINARY_DIR}/Hooks/DoitHooksTemp.cmake)
-	FILE(REMOVE ${CMAKE_BINARY_DIR}/Hooks/DoitHooksTemp.cmake)
-ENDIF()
