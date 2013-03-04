@@ -1,0 +1,24 @@
+#include "${fileName}Test.h"
+
+namespace ${projectName}
+{
+    ${fileName}Test::${fileName}Test()
+    {
+    }
+
+    ${fileName}Test::~${fileName}Test()
+    {
+    }
+
+    void ${fileName}Test::SetUp()
+    {
+    }
+
+    void ${fileName}Test::TearDown()
+    {
+    }
+
+    TEST_F(${fileName}Test, Test1)
+    {
+    }
+}

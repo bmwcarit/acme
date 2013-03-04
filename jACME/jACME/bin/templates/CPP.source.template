@@ -1,0 +1,12 @@
+#include "${includePath}"
+
+namespace ${projectName}
+{
+    ${fileName}::${fileName}()
+    {
+    }
+
+    ${fileName}::~${fileName}()
+    {
+    }
+}
