@@ -15,10 +15,9 @@
  */
  
 #include "pthread.h"
+#include "ModuleThatDependsOnASystemLibrary/ClassThatUsesThread.h"
 
-class ClassThatUsesThread
-{
-	void runAThread(){
+void ClassThatUsesThread::runAThread(){
 		
 	}
-}
+

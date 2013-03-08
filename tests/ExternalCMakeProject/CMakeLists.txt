@@ -20,3 +20,4 @@ project (ExternalCMakeProject)
 add_library (ExternalProjectLib LibrarySource.cpp)
 
 install (FILES ExternalProjectHeader.h DESTINATION include)
+install(TARGETS ExternalProjectLib ARCHIVE DESTINATION lib)

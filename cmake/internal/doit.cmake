@@ -81,8 +81,23 @@ FUNCTION(INTERNAL_JUST_DOIT)
 					INTERNAL_ADD_FLAGS_TO_TEST_TARGET()
 
 					MESSAGE(VERBOSE  "${CURRENT_MODULE_NAME} contains unit tests, building ${CURRENT_MODULE_NAME}Test")
-					TARGET_LINK_LIBRARIES(${CURRENT_MODULE_NAME}Test ${GoogleMock_LIBRARIES} ${GoogleTest_LIBRARIES} ${GoogleMock_PACKAGE_LIBS} ${GoogleTest_PACKAGE_LIBS} ${collected_dependencies_test})
+
+					SET(LIBS_OF_ALL_DEPENDENCIES "")
+			                FOREACH(currentDep ${collected_dependencies_test})
+			                        SET(CURRENT_LIBS ${${currentDep}_LIBRARIES})
+			                        MESSAGE(VERBOSE "linking libraries to module target ${CURRENT_LIBS}")
+			                        SET(LIBS_OF_ALL_DEPENDENCIES ${LIBS_OF_ALL_DEPENDENCIES} ${CURRENT_LIBS} CACHE INTERNAL "")
+			                ENDFOREACH()
+
+			                MESSAGE(VERBOSE "Test path: ${test_path}")
+					IF(NOT EXISTS "${test_path}/main.cpp")
+						SET(GoogleMock_LIBRARIES gtest_main gmock_main ${GoogleMock_LIBRARIES})
+					ENDIF()
+
+
+					TARGET_LINK_LIBRARIES(${CURRENT_MODULE_NAME}Test  ${GoogleMock_LIBRARIES} ${GoogleTest_LIBRARIES} ${GoogleMock_PACKAGE_LIBS} ${GoogleTest_PACKAGE_LIBS} ${LIBS_OF_ALL_DEPENDENCIES})
 					ADD_DEPENDENCIES(${CURRENT_MODULE_NAME}Test GoogleMock ${CURRENT_MODULE_NAME})
+					INSTALL(TARGETS ${CURRENT_MODULE_NAME}Test RUNTIME DESTINATION bin)
 				ENDIF()	
 			ENDIF()
 		ENDIF()
@@ -102,6 +117,7 @@ FUNCTION(INTERNAL_JUST_DOIT)
 		INTERNAL_COPY_RESOURCE_FILES()			# copies resource files to the output directory defined by "${CMAKE_RESOURCE_OUTPUT_DIRECTORY}"
 		INTERNAL_COPY_DOC_FILES()				# copies documentation files to the output directory defined by "${CMAKE_DOC_OUTPUT_DIRECTORY}"	
 		INTERNAL_COPY_INSTALL_FILES()			# copies files within "${CURRENT_MODULE_NAME}_INSTALL_FILES" to the output directory defined by "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}"
+		INTERNAL_COPY_TARGETS()				# copies the targets to CMAKE_INSTALL_PREFIX/<bin|lib>
 	ENDIF()
 	
 ENDFUNCTION(INTERNAL_JUST_DOIT)
@@ -125,19 +141,27 @@ MACRO(INTERNAL_COLLECT_DEPENDENCIES)
 			ENDIF()
 		ENDIF()
 	ENDIF()
+	MESSAGE (VERBOSE "The following dependencies have been collected: ${collected_dependencies}")
 ENDMACRO(INTERNAL_COLLECT_DEPENDENCIES)
 
 
 MACRO(INTERNAL_COLLECT_DEPENDENCIES_TEST)
 	SET(collected_dependencies_test ${collected_dependencies})
-	
+	MESSAGE(VERBOSE "Initial collected dependencies in test ${collected_dependencies}")
+	MESSAGE(VERBOSE "List of all dependencies: ${${CURRENT_MODULE_NAME}_DEPENDENCIES}")
+
+	MESSAGE(VERBOSE "GoogleMock_DEPENDENCIES ${GoogleMock_DEPENDENCIES}")
+	MESSAGE(VERBOSE "Threads Libraries: ${Thread_LIBRARIES}")
+
 	IF(NOT "${${CURRENT_MODULE_NAME}_TEST_FILES}" STREQUAL "")
 		FOREACH(current_dependency ${${CURRENT_MODULE_NAME}_DEPENDENCIES})
 			IF(${${current_dependency}_HAS_SOURCE_FILES})
 				SET(collected_dependencies_test ${collected_dependencies_test} ${current_dependency})
 			ENDIF()
 		ENDFOREACH()
-		
+
+		MESSAGE(VERBOSE "Collected dependencies for test ${collected_dependencies_test}")
+
 		IF(NOT "${collected_dependencies_test}" STREQUAL "")
 			LIST(REVERSE collected_dependencies_test)
 			LIST(REMOVE_DUPLICATES collected_dependencies_test)
@@ -162,13 +186,13 @@ MACRO(INTERNAL_COLLECT_DEPENDENCIES_TEST)
 						SET(collected_dependencies_test ${CURRENT_MODULE_NAME} ${collected_dependencies_test})
 					ENDIF()
 				ENDIF()
-				
-				IF(NOT EXISTS "${test_path}/main.cpp")
-					SET(collected_dependencies_test "${collected_dependencies_test}" gtest_main gmock_main)
-				ENDIF()		
+
 			ENDIF()
 		ENDIF()
 	ENDIF()
+
+	MESSAGE(VERBOSE "Finally collected dependencies in test ${collected_dependencies_test}")
+
 ENDMACRO(INTERNAL_COLLECT_DEPENDENCIES_TEST)
 
 
@@ -239,20 +263,22 @@ ENDMACRO(INTERNAL_COLLECT_PACKAGE_LINK_DIRECTORIES)
 
 
 MACRO(INTERNAL_ADD_MODULE_TARGET)
+  MESSAGE(VERBOSE "Adding module ${CURRENT_MODULE_NAME}")
 	IF("${CURRENT_MODULE_TYPE}" STREQUAL "STATIC")
 		ADD_LIBRARY(${CURRENT_MODULE_NAME}
 		STATIC
 		${${CURRENT_UPPER_MODULE_NAME}_MODULE_SOURCE_FILES}
 		)
 		SET(GLOBAL_EXTERNAL_LIBRARY_LIBRARIES ${GLOBAL_EXTERNAL_LIBRARY_LIBRARIES} ${CURRENT_MODULE_NAME}  CACHE INTERNAL "global list of all variables which indicate the libraries of external libraries")
-		SET(${CURRENT_MODULE_NAME}_LIBRARIES ${CURRENT_MODULE_NAME})
-			
+		SET(${CURRENT_MODULE_NAME}_LIBRARIES ${CURRENT_MODULE_NAME} CACHE INTERNAL "")
+		MESSAGE(VERBOSE "${CURRENT_MODULE_NAME}_LIBRARIES = ${${CURRENT_MODULE_NAME}_LIBRARIES}")
+		
 	ELSEIF("${CURRENT_MODULE_TYPE}" STREQUAL "DYNAMIC")
 		ADD_LIBRARY(${CURRENT_MODULE_NAME}
 		SHARED
 		${${CURRENT_UPPER_MODULE_NAME}_MODULE_SOURCE_FILES}
 		)
-		SET(${CURRENT_MODULE_NAME}_LIBRARIES ${CURRENT_MODULE_NAME})		
+		SET(${CURRENT_MODULE_NAME}_LIBRARIES ${CURRENT_MODULE_NAME} CACHE INTERNAL "")	
 				
 	ELSEIF("${CURRENT_MODULE_TYPE}" STREQUAL "EXE")
 		ADD_EXECUTABLE(${CURRENT_MODULE_NAME}
@@ -294,6 +320,7 @@ MACRO(INTERNAL_LINK_LIBRARIES_TO_MODULE_TARGET)
 		SET(LIBS_OF_ALL_DEPENDENCIES "")
 		FOREACH(currentDep ${collected_dependencies})
 			SET(CURRENT_LIBS ${${currentDep}_LIBRARIES})
+			MESSAGE(VERBOSE "Linking libraries: ${currentDep}_LIBRARIES = ${${currentDep}_LIBRARIES}")
 			SET(LIBS_OF_ALL_DEPENDENCIES ${LIBS_OF_ALL_DEPENDENCIES} ${CURRENT_LIBS} CACHE INTERNAL "")
 		ENDFOREACH()
 		TARGET_LINK_LIBRARIES(${CURRENT_MODULE_NAME} ${LIBS_OF_ALL_DEPENDENCIES} ${${CURRENT_MODULE_NAME}_LIBRARIES})
@@ -371,11 +398,19 @@ MACRO(INTERNAL_ADD_SOURCE_GROUPS)
 		ENDIF()
 ENDMACRO(INTERNAL_ADD_SOURCE_GROUPS)
 
+MACRO(INTERNAL_COPY_TARGETS)
+	IF(${${CURRENT_MODULE_NAME}_HAS_SOURCE_FILES})
+		INSTALL(TARGETS ${CURRENT_MODULE_NAME}
+			RUNTIME DESTINATION bin
+			LIBRARY DESTINATION lib
+			ARCHIVE DESTINATION lib)
+	ENDIF()
+ENDMACRO(INTERNAL_COPY_TARGETS)
 
 MACRO(INTERNAL_COPY_HEADER_FILES)
 	# copy header files
 	IF(EXISTS "${${CURRENT_MODULE_NAME}_DIR}/include/${CURRENT_MODULE_NAME}")
-		INSTALL(DIRECTORY ${${CURRENT_MODULE_NAME}_DIR}/include/${CURRENT_MODULE_NAME} DESTINATION "${CMAKE_HEADER_OUTPUT_DIRECTORY}/${CMAKE_PROJECT_NAME}" PATTERN ".svn" EXCLUDE)
+		INSTALL(DIRECTORY ${${CURRENT_MODULE_NAME}_DIR}/include/${CURRENT_MODULE_NAME} DESTINATION "include" PATTERN ".svn" EXCLUDE)
 	ENDIF()
 ENDMACRO(INTERNAL_COPY_HEADER_FILES)
 
@@ -387,7 +422,7 @@ MACRO(INTERNAL_COPY_RESOURCE_FILES)
 		IF(NOT "${jdi_exclude_files}" STREQUAL "")
 			LIST(REMOVE_ITEM jdi_ressource_files ${jdi_exclude_files})
 		ENDIF()
-		INSTALL(FILES ${jdi_ressource_files} DESTINATION "${CMAKE_RESOURCE_OUTPUT_DIRECTORY}/${CURRENT_MODULE_NAME}")
+		INSTALL(FILES ${jdi_ressource_files} DESTINATION "res")
 ENDMACRO(INTERNAL_COPY_RESOURCE_FILES)
 
 
@@ -398,7 +433,7 @@ MACRO(INTERNAL_COPY_DOC_FILES)
 	IF(NOT "${jdi_exclude_files}" STREQUAL "")
 		LIST(REMOVE_ITEM jdi_doc_files ${jdi_exclude_files})
 	ENDIF()
-	INSTALL(FILES ${jdi_doc_files} DESTINATION "${CMAKE_DOC_OUTPUT_DIRECTORY}/${CURRENT_MODULE_NAME}")
+	INSTALL(FILES ${jdi_doc_files} DESTINATION "doc")
 ENDMACRO(INTERNAL_COPY_DOC_FILES)
 
 

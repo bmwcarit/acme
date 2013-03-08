@@ -16,9 +16,6 @@
 
 ACME_ADD_MODULE(ModuleThatDependsOnASystemLibrary static)
 
-ACME_ADD_DEPENDENCY(Threads) # uses find_package(Threads) to get needed lib names, includes etc
+ACME_ADD_DEPENDENCY(Thread) # uses find_package(Threads) to get needed lib names, includes etc
 
-# FOR TESTING
-IF(Threads_FOUND)
-    ACME_ADD_FILE(arch/${TARGET_OS}/ClassThatUsesThread)
-ENDIF()
+ACME_ADD_FILE(arch/${TARGET_OS}/ClassThatUsesThread)
