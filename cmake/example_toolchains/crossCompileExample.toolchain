@@ -20,7 +20,6 @@ SET(CMAKE_SYSTEM_NAME <SystemName>)
 
 SET(TARGET_OS <target os>)
 SET(TARGET_ARCH <target arch>)
-SET(TARGET_COMPILER GCC)
 
 #set c compiler and flags
 SET(CMAKE_C_COMPILER <C cross compiler>)
