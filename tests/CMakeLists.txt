@@ -109,3 +109,4 @@ MESSAGE("Output: ${output}")
 ENDIF()
 
 
+TEST_BUILD(TestModuleTypeExe "Simple executable from sources")

@@ -14,4 +14,6 @@
 # limitations under the License.
 #
 
-ACME_ADD_SUBDIRECTORY(TestModuleTypeExe)
+ACME_ADD_MODULE(TestModuleTypeExe exe)
+
+ACME_ADD_FILE(main)
