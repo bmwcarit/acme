@@ -14,6 +14,6 @@
 # limitations under the License.
 #
 
-ACME_ADD_SUBDIRECTORY(TestModuleTypeExe)
-ACME_ADD_SUBDIRECTORY(TestModuleTypeStatic)
-ACME_ADD_SUBDIRECTORY(TestModuleTypeDynamic)
+ACME_ADD_MODULE(TestModuleTypeDynamic dynamic)
+
+ACME_ADD_FILE(ClassInDynamicLibrary)

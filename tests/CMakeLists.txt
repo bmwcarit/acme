@@ -111,3 +111,4 @@ ENDIF()
 
 TEST_BUILD(TestModuleTypeExe "Simple executable from sources")
 TEST_BUILD(TestModuleTypeStatic "Simple static library from sources")
+TEST_BUILD(TestModuleTypeDynamic "Simple dynamic library from sources")
