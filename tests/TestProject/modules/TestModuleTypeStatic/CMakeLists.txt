@@ -14,5 +14,6 @@
 # limitations under the License.
 #
 
-ACME_ADD_SUBDIRECTORY(TestModuleTypeExe)
-ACME_ADD_SUBDIRECTORY(TestModuleTypeStatic)
+ACME_ADD_MODULE(TestModuleTypeStatic static)
+
+ACME_ADD_FILE(ClassInStaticLibrary)
