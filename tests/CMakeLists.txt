@@ -121,3 +121,11 @@ TEST_BUILD(TestAutomaticTestProjectsTest "Testprojects are added automatically w
 TEST_BUILD(TestDependencyAutolink "ACME_ADD_DEPENDENCY includes header path and links automatically")
 TEST_BUILD(TestDependencyOnAnExternalCmake "Test add dependency which is an external cmake project with a find script in (project)/cmake/plugins")")
 TEST_BUILD(TestDependencyOnSystemLibrary "Test add dependency which is a system library with a find script in (project)/cmake/modules")
+TEST_BUILD(TestIndirectDependencies_Indirect_SystemLibrary "Indirect dependency on module depending on system library")
+TEST_BUILD(TestIndirectDependencies_Indirect_Static "Indirect dependency on static library module")
+TEST_BUILD(TestIndirectDependencies_Indirect_OnlyHeaders "Indirect dependency on module containing only headers")
+TEST_BUILD(TestIndirectDependencies_Indirect_ExternalCmake "Indirect dependency on module depending on external cmake")
+TEST_BUILD(TestIndirectDependencies_Indirect_Dynamic "Indirect dependency on dynamic library module")
+TEST_BUILD(TestIndirectDependencies_Direct "Start of indirect dependency chain")
+TEST_BUILD(TestIndirectDependencies "Indirect dependency chain an multiple projects in a row of different types")
+
