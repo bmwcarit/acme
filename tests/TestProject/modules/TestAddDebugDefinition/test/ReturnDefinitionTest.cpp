@@ -15,8 +15,11 @@
  */
  
  #include "ReturnDefinition.h"
+ #include "gmock/gmock.h"
 
-int ReturnDefinition::returnDefinition()
-{
-	return TEST_DEFINITION;
-}
+ TEST(ReturnDefinition, TestTheValue)
+ {
+	ReturnDefinition instance;
+	EXPECT_EQ(987654321, instance.returnDefinition());
+ }
+ 

@@ -13,8 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+ 
+ #if defined (_WIN32) 
+  #if defined(TestIndirectDependencies_Indirect_Dynamic_EXPORTS)
+    #define  DECLEXPORT __declspec(dllexport)
+  #else
+    #define  DECLEXPORT __declspec(dllimport)
+  #endif 
+#else 
+ #define DECLEXPORT
+#endif
 
-class TestIndirectDependencies_Indirect_Dynamic
+class DECLEXPORT TestIndirectDependencies_Indirect_Dynamic
 {
     public:
 	virtual void method();

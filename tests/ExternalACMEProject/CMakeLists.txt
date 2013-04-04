@@ -14,11 +14,12 @@
 # limitations under the License.
 #
 
-ACME_ADD_MODULE(TestAddDebugDefinition static)
+cmake_minimum_required(VERSION 2.8)
 
-ACME_ADD_FILE(ReturnDefinition)
+PROJECT(ExternalACMEProject)
 
-# This tests if only appropriate definitions are set
-ACME_ADD_RELEASE_DEFINITION(TEST_DEFINITION=123456789)
-ACME_ADD_DEBUG_DEFINITION(TEST_DEFINITION=987654321)
-ACME_ADD_RELEASE_DEFINITION(TEST_DEFINITION=123456789)
+INCLUDE(../../cmake/acme.cmake)
+
+ACME_ADD_SUBDIRECTORY(modules)
+
+ACME_FINALIZE()

@@ -14,9 +14,15 @@
  * limitations under the License.
  */
  
- #include "ReturnDefinition.h"
+#include "TestDependencyOnAnExternalACME/ClassThatUsesACMELib.h"
+#include "ExternalACMEModule/ExternalACMEFile.h"
 
-int ReturnDefinition::returnDefinition()
-{
-	return TEST_DEFINITION;
+void ClassThatUsesACMELib::useExternalLib(){
+    ExternalACMEFile externalClass;
+    externalClass.method();
+}
+
+int main(){
+	ClassThatUsesACMELib instance;
+	instance.useExternalLib();
 }

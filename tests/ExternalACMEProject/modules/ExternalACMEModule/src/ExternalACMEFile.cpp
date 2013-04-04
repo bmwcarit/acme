@@ -13,10 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+ #include "ExternalACMEModule/ExternalACMEFile.h"
  
- #include "ReturnDefinition.h"
-
-int ReturnDefinition::returnDefinition()
-{
-	return TEST_DEFINITION;
-}
+void ExternalACMEFile::method(){};

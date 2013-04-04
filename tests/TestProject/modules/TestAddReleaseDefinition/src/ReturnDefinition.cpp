@@ -18,10 +18,5 @@
 
 int ReturnDefinition::returnDefinition()
 {
-	{ SHOULD_BE_CLOSING_BRACKET_DEFINITION
-	return 55;
-
-#ifdef DEFINITION_SHOULD_NOT_REACH_CODE
-break the compile here
-#endif
+	return TEST_DEFINITION;
 }

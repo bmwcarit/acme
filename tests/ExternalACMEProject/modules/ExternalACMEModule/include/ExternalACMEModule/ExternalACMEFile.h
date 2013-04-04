@@ -14,9 +14,8 @@
  * limitations under the License.
  */
  
- #include "ReturnDefinition.h"
-
-int ReturnDefinition::returnDefinition()
+class ExternalACMEFile 
 {
-	return TEST_DEFINITION;
-}
+    public:
+    void method();
+};

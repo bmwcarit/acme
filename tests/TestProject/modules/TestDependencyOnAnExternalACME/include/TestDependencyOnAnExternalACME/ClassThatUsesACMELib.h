@@ -14,9 +14,10 @@
  * limitations under the License.
  */
  
- #include "ReturnDefinition.h"
+#pragma once
 
-int ReturnDefinition::returnDefinition()
+class ClassThatUsesACMELib
 {
-	return TEST_DEFINITION;
-}
+public:
+	void useExternalLib();
+};
