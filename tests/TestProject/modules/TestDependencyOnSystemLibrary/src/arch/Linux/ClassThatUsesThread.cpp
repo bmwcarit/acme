@@ -17,7 +17,21 @@
 #include "pthread.h"
 #include "TestDependencyOnSystemLibrary/ClassThatUsesThread.h"
 
+void* runInThread(void* args) {}
+
 void ClassThatUsesThread::runAThread(){
-		
-	}
+
+	pthread_t thread;
+	pthread_attr_t attr;
+	pthread_attr_init(&attr);
+	pthread_create(&thread, &attr, runInThread, NULL);
+}
+
+
+
+int main() {
+	ClassThatUsesThread c;
+	c.runAThread();
+	return 0;
+}
 

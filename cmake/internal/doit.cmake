@@ -85,20 +85,13 @@ MACRO(INTERNAL_JUST_DOIT)
 
 					MESSAGE(VERBOSE  "${CURRENT_MODULE_NAME} contains unit tests, building ${CURRENT_MODULE_NAME}Test")
 
-					SET(LIBS_OF_ALL_DEPENDENCIES "")
-			                FOREACH(currentDep ${collected_dependencies_test})
-			                        SET(CURRENT_LIBS ${${currentDep}_LIBRARIES})
-			                        MESSAGE(VERBOSE "linking libraries to module target ${CURRENT_LIBS}")
-			                        SET(LIBS_OF_ALL_DEPENDENCIES ${LIBS_OF_ALL_DEPENDENCIES} ${CURRENT_LIBS} CACHE INTERNAL "")
-			                ENDFOREACH()
-
 			                MESSAGE(VERBOSE "Test path: ${test_path}")
 					IF(NOT EXISTS "${test_path}/main.cpp")
 						SET(GoogleMock_LIBRARIES gtest_main gmock_main ${GoogleMock_LIBRARIES})
 					ENDIF()
 
 
-					TARGET_LINK_LIBRARIES(${CURRENT_MODULE_NAME}Test  ${GoogleMock_LIBRARIES} ${GoogleTest_LIBRARIES} ${LIBS_OF_ALL_DEPENDENCIES})
+					TARGET_LINK_LIBRARIES(${CURRENT_MODULE_NAME}Test  ${GoogleMock_LIBRARIES} ${GoogleTest_LIBRARIES} ${collected_dependencies_test})
 					ADD_DEPENDENCIES(${CURRENT_MODULE_NAME}Test GoogleMock ${CURRENT_MODULE_NAME})
 					INSTALL(TARGETS ${CURRENT_MODULE_NAME}Test RUNTIME DESTINATION bin)
 				ENDIF()	
@@ -154,17 +147,22 @@ ENDMACRO(INTERNAL_COLLECT_LIBRARIES_FOR_LINKING)
 
 MACRO(INTERNAL_COLLECT_DEPENDENCIES_TEST)
 	SET(collected_dependencies_test ${collected_libs})
-	MESSAGE(VERBOSE "Initial collected dependencies in test ${collected_libs}")
-	MESSAGE(VERBOSE "List of all dependencies: ${${CURRENT_MODULE_NAME}_DEPENDENCIES}")
+	MESSAGE(VERBOSE "Initial collected libs in test ${collected_libs}")
+	MESSAGE(VERBOSE "List of all dependencies of ${CURRENT_MODULE_NAME}: ${${CURRENT_MODULE_NAME}_DEPENDENCIES}")
 
 	MESSAGE(VERBOSE "GoogleMock_DEPENDENCIES ${GoogleMock_DEPENDENCIES}")
 	MESSAGE(VERBOSE "Threads Libraries: ${Thread_LIBRARIES}")
+	MESSAGE(VERBOSE "Rt Libraries: ${Rt_LIBRARIES}")
 
 	IF(NOT "${${CURRENT_MODULE_NAME}_TEST_FILES}" STREQUAL "")
 		FOREACH(current_dependency ${${CURRENT_MODULE_NAME}_DEPENDENCIES})
 			IF(${${current_dependency}_HAS_SOURCE_FILES})
-				SET(collected_dependencies_test ${collected_dependencies_test} ${current_dependency})
+				SET(collected_dependencies_test ${collected_dependencies_test} ${${current_dependency}_LIBRARIES})
 			ENDIF()
+		ENDFOREACH()
+
+		FOREACH (googleMockDep ${GoogleMock_DEPENDENCIES})
+			SET(collected_dependencies_test ${collected_dependencies_test} ${${googleMockDep}_LIBRARIES})
 		ENDFOREACH()
 
 		MESSAGE(VERBOSE "Collected dependencies for test ${collected_dependencies_test}")
@@ -176,17 +174,13 @@ MACRO(INTERNAL_COLLECT_DEPENDENCIES_TEST)
 		ENDIF()
 	
 		IF(${CONFIG_BUILD_UNITTESTS})
-			# Add libraries of the module dependencies to the variable (in order to link it to the test-module)
-			FOREACH(current_dependency ${${CURRENT_MODULE_NAME}_DEPENDENCIES})
-				SET(collected_dependencies_test "${collected_dependencies_test}" ${${current_dependency}_LIBRARIES})
-			ENDFOREACH()
 			
 			IF(NOT "${collected_dependencies_test}" STREQUAL "")
 				LIST(REVERSE collected_dependencies_test)
 				LIST(REMOVE_DUPLICATES collected_dependencies_test)
 				LIST(REVERSE collected_dependencies_test)
 			ENDIF()		
-				
+			
 			IF(NOT ${CONFIG_BUILD_GLOBAL_TEST_EXECUTABLE})			
 				IF(${${CURRENT_MODULE_NAME}_HAS_SOURCE_FILES})
 					IF(NOT "${CURRENT_MODULE_TYPE}" STREQUAL "DYNAMIC") # use an advanced flag to control this behaviour ("DYNAMIC_TEST_LINK_BEHAVIOUR") ?!
@@ -198,7 +192,7 @@ MACRO(INTERNAL_COLLECT_DEPENDENCIES_TEST)
 		ENDIF()
 	ENDIF()
 
-	MESSAGE(VERBOSE "Finally collected dependencies in test ${collected_dependencies_test}")
+	MESSAGE(VERBOSE "Finally collected libs for linking in test  ${collected_dependencies_test}")
 
 ENDMACRO(INTERNAL_COLLECT_DEPENDENCIES_TEST)
 

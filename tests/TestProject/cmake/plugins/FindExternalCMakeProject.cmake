@@ -14,6 +14,13 @@
 # limitations under the License.
 #
 
+IF(WIN32)
+    SET(REQUIREMENTS Shlwapi)
+ELSE()
+    #UNIX
+    SET(REQUIREMENTS DynamicLibrary)
+ENDIF()
+
 ACME_ADD_CMAKE_PROJECT( ExternalCMakeProject
 				LIBNAMES	"ExternalProjectLib"
 #				LIBDIRS "<libdir>" ...
@@ -27,6 +34,6 @@ ACME_ADD_CMAKE_PROJECT( ExternalCMakeProject
 #				DEPENDENT_DEFINITIONS "<definition1>" ...
 #				DEPENDENT_DEBUG_DEFINITIONS "<definition2>" ...
 #				DEPENDENT_RELEASE_DEFINITIONS "<definition3>" ...
-                REQUIRED_PACKAGES TestModuleTypeStatic
+                REQUIRED_PACKAGES ${REQUIREMENTS}
 				INSTALL	1
 			)

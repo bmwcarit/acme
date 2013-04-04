@@ -13,28 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+ 
+#pragma once
 
-#ifdef WIN32
-    #include <Windows.h>
-    #include "Shlwapi.h"
-#else
-    #include <dlfcn.h>
-#endif
-
-#include "ExternalProjectHeader.h"
-
-int ExternalCMakeProjectClass::externalMethod(){ 
-
-#ifdef WIN32
-    // Requires Shlwapi
-    char testString[ ] = "test.txt"; 
-    char *pTestString = testString;
-
-    PathRemoveFileSpec(pTestString);
-#else
-    // Requires dl
-    dlopen("test", RTLD_LAZY);
-#endif
-
-    return 55;
-}
+class ClassThatUsesACMELib
+{
+public:
+	void useExternalLib();
+};

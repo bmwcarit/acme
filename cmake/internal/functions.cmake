@@ -401,7 +401,7 @@ FUNCTION(INTERNAL_ADD_DEPENDENCY ad_name)
 	ENDIF()
     
 	IF("${ad_name}_FOUND")
-		MESSAGE(VERBOSE INTERNAL_ADD_DEPENDENCY "Dependency now satisfied")
+		MESSAGE(VERBOSE INTERNAL_ADD_DEPENDENCY "Dependency now satisfied, the following libraries will be linked: ${${ad_name}_LIBRARIES}")
         # Add all dependencies of new dependency and the new dependency itself
         SET(${CURRENT_MODULE_NAME}_DEPENDENCIES ${${CURRENT_MODULE_NAME}_DEPENDENCIES} ${ad_name} ${${ad_name}_DEPENDENCIES})
 		INTERNAL_LIST_REMOVE_DUPLICATES("${CURRENT_MODULE_NAME}_DEPENDENCIES")

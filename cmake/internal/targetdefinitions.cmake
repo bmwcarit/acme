@@ -26,6 +26,8 @@ FUNCTION(INTERNAL_ADD_COMPILER_FLAGS_TO_TARGET acf_target)
 	ENDIF()
 	SET(current_compile_flags "${current_compile_flags}${ARGN}" )
 	
+MESSAGE(VERBOSE "The target ${acf_target} now has the following compiler flags: ${current_compile_flags}")
+
 	SET_TARGET_PROPERTIES(${acf_target} PROPERTIES COMPILE_FLAGS "${current_compile_flags}" )
 ENDFUNCTION(INTERNAL_ADD_COMPILER_FLAGS_TO_TARGET)
 

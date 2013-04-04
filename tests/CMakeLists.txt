@@ -58,6 +58,15 @@ FUNCTION(TEST_BUILD TargetName Description)
 	ENDIF()
 ENDFUNCTION(TEST_BUILD)
 
+FUNCTION(DELETE_FILE FileToDelete)
+execute_process(COMMAND cmake -E remove "${FileToDelete}"
+			OUTPUT_VARIABLE output
+			ERROR_VARIABLE output
+			RESULT_VARIABLE retValue)
+MESSAGE("Deleting file: ${FileToDelete}")
+	ASSERT(retValue EQUAL 0 "")
+ENDFUNCTION(DELETE_FILE)
+
 FUNCTION(CONFIGURE_TESTPROJECT)
 	SET(BUILD_DIR_WITH ${CURRENT_BUILD_DIR}/${CURRENT_CONFIG})
 	MESSAGE("Create build directory: ${BUILD_DIR_WITH}")
@@ -73,7 +82,7 @@ FUNCTION(CONFIGURE_TESTPROJECT)
 		MESSAGE("Using CMAKE_INSTALL_PREFIX: ${CURRENT_INSTALL_PREFIX}")
 	ENDIF()
 	
-	execute_process(COMMAND cmake --config ${CURRENT_CONFIG} ../../TestProject -DCONFIG_VERBOSE=1 -DCMAKE_TOOLCHAIN_FILE=${TOOLCHAINFILE} ${INSTALL_DIRECTIVE} -DCMAKE_BUILD_TYPE=${CURRENT_CONFIG} 
+	execute_process(COMMAND cmake --config ${CURRENT_CONFIG} ../../TestProject -DCMAKE_TOOLCHAIN_FILE=${TOOLCHAINFILE} -DCONFIG_VERBOSE=1 ${INSTALL_DIRECTIVE} -DCMAKE_BUILD_TYPE=${CURRENT_CONFIG} 
 			WORKING_DIRECTORY "${CURRENT_BUILD_DIR}"
 			OUTPUT_VARIABLE output
 			ERROR_VARIABLE output
@@ -85,11 +94,7 @@ FUNCTION(CONFIGURE_TESTPROJECT)
 ENDFUNCTION(CONFIGURE_TESTPROJECT)
 
 FUNCTION(RUN_TEST NAME)
-	
-	IF(LINUX)
-	ELSE(WINDOWS)
-		SET(executableFilename "${CURRENT_BUILD_DIR}/TestProject/bin/Windows_X86_32/${CURRENT_CONFIG}/${NAME}")
-	ENDIF()
+	SET(executableFilename "${CURRENT_BUILD_DIR}/TestProject/bin/${OSNAME}_X86_32/${CURRENT_CONFIG}/${NAME}")
 	MESSAGE("Run test: ${executableFilename}")
 	execute_process(COMMAND ${executableFilename}
 			OUTPUT_VARIABLE output
@@ -101,10 +106,12 @@ FUNCTION(RUN_TEST NAME)
 	ENDIF()
 ENDFUNCTION(RUN_TEST)
 
-#Choose an example toolchain file based on os
-IF(LINUX)
-	SET(TOOLCHAINFILE "${CMAKE_CURRENT_SOURCE_DIR}/../cmake/example_toolchains/nativeLinuxExample.toolchain")
-ELSE(WINDOWS)
+#Choose variables and toolchain file based on os
+IF(UNIX)
+    SET(OSNAME "Linux")
+	SET(TOOLCHAINFILE "${CMAKE_CURRENT_SOURCE_DIR}/../cmake/example_toolchains/nativeLinux_X86_32.toolchain")
+ELSEIF(WIN32)
+    SET(OSNAME "Windows")
 	SET(TOOLCHAINFILE "${CMAKE_CURRENT_SOURCE_DIR}/../cmake/example_toolchains/nativeWindows_X86_32.toolchain" CACHE FILEPATH "")
 ENDIF()
 
@@ -146,6 +153,15 @@ TEST_BUILD(TestIndirectDependencies_Indirect_Dynamic "Indirect dependency on dyn
 TEST_BUILD(TestIndirectDependencies_Direct "Start of indirect dependency chain")
 TEST_BUILD(TestIndirectDependencies "Indirect dependency chain an multiple projects in a row of different types")
 TEST_BUILD(TestDependencyOnAnExternalACME "Dependency on another ACME project")
+MESSAGE("Tests exist in external ACME Project")
+ASSERT(EXISTS "${CURRENT_BUILD_DIR}/externals/bin/ExternalACMEModuleTest${CMAKE_EXECUTABLE_SUFFIX}")
+
+TEST_BUILD(TestDependencyOnAnExternalACME_withoutBuildingTests "Dependency on another ACME project, without building tests in it")
+MESSAGE("Lib of external ACME Project without tests exists")
+ASSERT(EXISTS "${CURRENT_BUILD_DIR}/externals/lib/${CMAKE_STATIC_LIBRARY_PREFIX}ExternalACMEModule2${CMAKE_STATIC_LIBRARY_SUFFIX}")
+MESSAGE("Tests do not exist in external ACME Project which was configured not to build tests")
+ASSERT_FALSE(EXISTS "${CURRENT_BUILD_DIR}/externals/bin/ExternalACMEModule2Test${CMAKE_EXECUTABLE_SUFFIX}")
+
 TEST_BUILD(TestDependencyONLYHEADERS "ADD_DEPENDENCY(X ONLY_HEADERS) does not link other module")
 
 SET(ExpectedFilename "${CURRENT_BUILD_DIR}/externals/lib/${CMAKE_STATIC_LIBRARY_PREFIX}ExternalACMEModule${CMAKE_STATIC_LIBRARY_SUFFIX}")
@@ -153,7 +169,7 @@ message("file: ${ExpectedFilename}")
 MESSAGE("ACME lib exists")
 ASSERT(EXISTS ${ExpectedFilename})
 
-SET(DeliverableFilename "${CURRENT_BUILD_DIR}/../../TestProject/deliverable/Windows_X86_32/lib/${CMAKE_STATIC_LIBRARY_PREFIX}ExternalACMEModule${CMAKE_STATIC_LIBRARY_SUFFIX}")
+SET(DeliverableFilename "${CURRENT_BUILD_DIR}/../../TestProject/deliverable/${OSNAME}_X86_32/lib/${CMAKE_STATIC_LIBRARY_PREFIX}ExternalACMEModule${CMAKE_STATIC_LIBRARY_SUFFIX}")
 TEST_BUILD(install "Install project")
 MESSAGE("ACME lib exists in deliverable after install")
 ASSERT(EXISTS ${DeliverableFilename})

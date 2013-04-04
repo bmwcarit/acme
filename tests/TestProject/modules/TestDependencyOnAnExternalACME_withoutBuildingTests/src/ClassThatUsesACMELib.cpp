@@ -13,28 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+ 
+#include "TestDependencyOnAnExternalACME/ClassThatUsesACMELib.h"
+#include "ExternalACMEModule2/ExternalACMEFile2.h"
 
-#ifdef WIN32
-    #include <Windows.h>
-    #include "Shlwapi.h"
-#else
-    #include <dlfcn.h>
-#endif
+void ClassThatUsesACMELib::useExternalLib(){
+    ExternalACMEFile2 externalClass;
+    externalClass.method();
+}
 
-#include "ExternalProjectHeader.h"
-
-int ExternalCMakeProjectClass::externalMethod(){ 
-
-#ifdef WIN32
-    // Requires Shlwapi
-    char testString[ ] = "test.txt"; 
-    char *pTestString = testString;
-
-    PathRemoveFileSpec(pTestString);
-#else
-    // Requires dl
-    dlopen("test", RTLD_LAZY);
-#endif
-
-    return 55;
+int main(){
+	ClassThatUsesACMELib instance;
+	instance.useExternalLib();
 }

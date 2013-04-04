@@ -16,7 +16,6 @@
  
 #include "TestDependencyOnAnExternalCmake/ClassThatUsesExternalLib.h"
 #include "ExternalProjectHeader.h"
- #include "TestModuleTypeStatic/ClassInStaticLibrary.h"
 
 void ClassThatUsesExternalLib::useExternalLib(){
     ExternalCMakeProjectClass externalClass;
@@ -26,7 +25,5 @@ void ClassThatUsesExternalLib::useExternalLib(){
 int main(){
 	ClassThatUsesExternalLib instance;
 	instance.useExternalLib();
-    
-    ClassInStaticLibrary anotherInstance;
-    anotherInstance.method();
+
 }

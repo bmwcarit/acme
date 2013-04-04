@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2012 BMW Car IT GmbH
+# Copyright (C) 2013 BMW Car IT GmbH
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -14,13 +14,6 @@
 # limitations under the License.
 #
 
-SET(CMAKE_SYSTEM_NAME Linux)
-SET(CMAKE_SYSTEM_VERSION 1)
+ACME_ADD_MODULE(ExternalACMEModule2 static)
 
-SET(TARGET_OS Linux)
-
-SET(CMAKE_C_FLAGS_DEBUG "-ggdb -Wall -DNDEBUG")
-SET(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG}")
-
-SET(CMAKE_C_FLAGS_RELEASE "-Wall -O3")
-SET(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE}")
+ACME_ADD_FILE(ExternalACMEFile2)
