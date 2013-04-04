@@ -14,10 +14,3 @@
 # limitations under the License.
 #
 
-ACME_ADD_SUBDIRECTORY(ModuleA)
-ACME_ADD_SUBDIRECTORY(ModuleThatDependsOnASystemLibrary)
-ACME_ADD_SUBDIRECTORY(ModuleThatDependsOnAnExternalCmake)
-ACME_ADD_SUBDIRECTORY(ModuleThatOnlyHasPublicHeaders)
-ACME_ADD_SUBDIRECTORY(ModuleToTestTransitiveDependencies)
-ACME_ADD_SUBDIRECTORY(mainProgramIndirectDependencies)
-ACME_ADD_SUBDIRECTORY(mainProgram)
