@@ -100,10 +100,5 @@ SET(GLOBAL_UTILS_MODULES_TESTS   		"" CACHE INTERNAL "stores the module names of
 
 SET(GLOBAL_MODULE_NAMES					"" CACHE INTERNAL "global list of all module names")
 
-SET(GLOBAL_EXTERNAL_LIBRARY_LIBRARIES_DIR					"" CACHE INTERNAL "global list of all variables which indicate the library directory of external libraries")
-SET(GLOBAL_EXTERNAL_LIBRARY_LIBRARIES						"" CACHE INTERNAL "global list of all variables which indicate the libraries of external libraries")
-
-SET(GLOBAL_PACKAGE_LIBRARIES		""	CACHE INTERNAL	"global list of all variables which store the libraries of the found packages")
-
 SET(GLOBAL_CMAKE_PROJECTS                   "" CACHE INTERNAL "global list of all added cmake project")
 SET(GLOBAL_DEPENDENCY_EDGES "" CACHE INTERNAL "global list of all dependencies that are used to generate the dependency graph") 

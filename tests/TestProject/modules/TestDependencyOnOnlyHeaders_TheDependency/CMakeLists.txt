@@ -14,10 +14,6 @@
 # limitations under the License.
 #
 
-ACME_ADD_MODULE(TestDependencyONLYHEADERS exe)
+ACME_ADD_MODULE(TestDependencyOnOnlyHeaders_TheDependency static)
 
-ACME_ADD_FILE(Source)
-
-ACME_ADD_DEPENDENCY(TestDependencyONLYHEADERS_CantLinkDouble)
-ACME_ADD_DEPENDENCY(TestDependencyONLYHEADERS_CantLinkDouble2 HEADERS_ONLY)
-SET(TestDependencyONLYHEADERS_CantLinkDouble2_LIBRARIES cantLinkThisButIShouldntSoItsOK CACHE INTERNAL "")
+ACME_ADD_FILE(ClassInDependency)

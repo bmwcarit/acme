@@ -37,13 +37,16 @@ MACRO(INTERNAL_JUST_DOIT)
 	IF(EXISTS "${test_path}/main.cpp")
 		SET(${CURRENT_MODULE_NAME}_TEST_MAIN "${test_path}/main.cpp")
 	ENDIF()	
+    
+    INTERNAL_LIST_REMOVE_DUPLICATES(GoogleMock_DEPENDENCIES)
+    SET(GoogleMock_DEPENDENCIES ${GoogleMock_DEPENDENCIES} CACHE INTERNAL "")
 	
 	INTERNAL_SET_GLOBAL_TEST_VARIABLES()
 	INTERNAL_SET_MODULE_SOURCE_FILES()						# adds files in the "res/" folders to "${CURRENT_UPPER_MODULE_NAME}_MODULE_SOURCE_FILES"
-	INTERNAL_DOIT_REMOVE_DUPLICATES()	  
+    
 	IF(${WITH_${CURRENT_UPPER_MODULE_NAME}} AND ${${CURRENT_MODULE_NAME}_BUILD_ENABLED})
 		# Everything that has to do with collecting things from dependencies
-		INTERNAL_COLLECT_DEPENDENCIES()						# sets the local variable "collected_dependencies"
+		INTERNAL_COLLECT_LIBRARIES_FOR_LINKING()			# sets the local variable "collected_libs"
 		INTERNAL_COLLECT_DEPENDENCIES_TEST()				# sets the local variable "collected_dependencies_test"
 		INTERNAL_COLLECT_DEPENDENCY_DIRS()					# sets the local variable "collected_dependency_dirs"
 		INTERNAL_COLLECT_DEPENDENCY_DIRS_TEST()				# sets the local variable "collected_dependency_dirs_test"
@@ -54,12 +57,11 @@ MACRO(INTERNAL_JUST_DOIT)
 		
 		IF(${${CURRENT_MODULE_NAME}_HAS_SOURCE_FILES})
 			# Create actual cmake target and add properties to them
-			LINK_DIRECTORIES(${GLOBAL_EXTERNAL_LIBRARY_LIBRARIES_DIR} ${collected_dependency_dirs})
 			INTERNAL_ADD_MODULE_TARGET()					# adds the "${${CURRENT_UPPER_MODULE_NAME}_MODULE_SOURCE_FILES}" to the generated library or executable target
 			INTERNAL_ADD_FLAGS_TO_MODULE_TARGET()			# adds compiler and linker flags as well as debug and release definitions to the library or executable target
 			INTERNAL_SET_MODULE_TARGET_PROPERTIES()			# sets the "INCLUDE_DIRECTORIES" and "LINKER_LANGUAGE" property of the library or executable target 
 			INTERNAL_ADD_DEPENDENCIES_TO_MODULE_TARGET()	# adds the dependencies within "${${CURRENT_MODULE_NAME}_DEPENDENCIES}" to the library or executable target
-			INTERNAL_LINK_LIBRARIES_TO_MODULE_TARGET()		# links the libraries within "${${CURRENT_MODULE_NAME}_LIBRARIES}" and "${collected_dependencies}" to the library or executable target
+			INTERNAL_LINK_LIBRARIES_TO_MODULE_TARGET()		# links the libraries within "${${CURRENT_MODULE_NAME}_LIBRARIES}" and "${collected_libs}" to the library or executable target
 		ELSE()
 			ADD_CUSTOM_TARGET(${CURRENT_MODULE_NAME} SOURCES ${${CURRENT_UPPER_MODULE_NAME}_MODULE_SOURCE_FILES})
 		ENDIF()
@@ -96,7 +98,7 @@ MACRO(INTERNAL_JUST_DOIT)
 					ENDIF()
 
 
-					TARGET_LINK_LIBRARIES(${CURRENT_MODULE_NAME}Test  ${GoogleMock_LIBRARIES} ${GoogleTest_LIBRARIES} ${GoogleMock_PACKAGE_LIBS} ${GoogleTest_PACKAGE_LIBS} ${LIBS_OF_ALL_DEPENDENCIES})
+					TARGET_LINK_LIBRARIES(${CURRENT_MODULE_NAME}Test  ${GoogleMock_LIBRARIES} ${GoogleTest_LIBRARIES} ${LIBS_OF_ALL_DEPENDENCIES})
 					ADD_DEPENDENCIES(${CURRENT_MODULE_NAME}Test GoogleMock ${CURRENT_MODULE_NAME})
 					INSTALL(TARGETS ${CURRENT_MODULE_NAME}Test RUNTIME DESTINATION bin)
 				ENDIF()	
@@ -125,31 +127,34 @@ MACRO(INTERNAL_JUST_DOIT)
 ENDMACRO(INTERNAL_JUST_DOIT)
 
 
-MACRO(INTERNAL_COLLECT_DEPENDENCIES)
-	SET(collected_dependencies "${${CURRENT_MODULE_NAME}_LIBRARIES}" "${${CURRENT_MODULE_NAME}_PACKAGE_LIBS}")
-	INTERNAL_LIST_REMOVE_ITEM(collected_dependencies "")
+MACRO(INTERNAL_COLLECT_LIBRARIES_FOR_LINKING)
+	SET(collected_libs "${${CURRENT_MODULE_NAME}_LIBRARIES}")
+	INTERNAL_LIST_REMOVE_ITEM(collected_libs "")
 
-	IF(${${CURRENT_MODULE_NAME}_HAS_SOURCE_FILES})
 		IF(NOT "${${CURRENT_MODULE_NAME}_DEPENDENCIES}" STREQUAL "")
 			FOREACH(current_dependency ${${CURRENT_MODULE_NAME}_DEPENDENCIES})
-				SET(collected_dependencies ${collected_dependencies} ${${current_dependency}_PACKAGE_LIBS} ${${current_dependency}_LIBRARIES} ${current_dependency})
+            MESSAGE(VERBOSE "${CURRENT_MODULE_NAME}_${current_dependency}_ONLY_HEADERS=${${CURRENT_MODULE_NAME}_${current_dependency}_ONLY_HEADERS}")
+                IF(NOT ${CURRENT_MODULE_NAME}_${current_dependency}_ONLY_HEADERS)
+                    SET(collected_libs ${collected_libs} ${${current_dependency}_LIBRARIES})
+                ELSE()
+                    MESSAGE(VERBOSE "Not adding libraries of ${current_dependency} to ${CURRENT_MODULE_NAME}, because of ONLY_HEADERS option")
+                ENDIF()
 			ENDFOREACH()	
 			
-			LIST(LENGTH collected_dependencies jd_length)
+			LIST(LENGTH collected_libs jd_length)
 			IF(jd_length GREATER 1)
-				LIST(REVERSE collected_dependencies)
-				LIST(REMOVE_DUPLICATES collected_dependencies)
-				LIST(REVERSE collected_dependencies)
+				LIST(REVERSE collected_libs)
+				LIST(REMOVE_DUPLICATES collected_libs)
+				LIST(REVERSE collected_libs)
 			ENDIF()
 		ENDIF()
-	ENDIF()
-	MESSAGE (VERBOSE "The following dependencies have been collected: ${collected_dependencies}")
-ENDMACRO(INTERNAL_COLLECT_DEPENDENCIES)
+	MESSAGE (VERBOSE "The following libs for linking have been collected: ${collected_libs}")
+ENDMACRO(INTERNAL_COLLECT_LIBRARIES_FOR_LINKING)
 
 
 MACRO(INTERNAL_COLLECT_DEPENDENCIES_TEST)
-	SET(collected_dependencies_test ${collected_dependencies})
-	MESSAGE(VERBOSE "Initial collected dependencies in test ${collected_dependencies}")
+	SET(collected_dependencies_test ${collected_libs})
+	MESSAGE(VERBOSE "Initial collected dependencies in test ${collected_libs}")
 	MESSAGE(VERBOSE "List of all dependencies: ${${CURRENT_MODULE_NAME}_DEPENDENCIES}")
 
 	MESSAGE(VERBOSE "GoogleMock_DEPENDENCIES ${GoogleMock_DEPENDENCIES}")
@@ -173,7 +178,7 @@ MACRO(INTERNAL_COLLECT_DEPENDENCIES_TEST)
 		IF(${CONFIG_BUILD_UNITTESTS})
 			# Add libraries of the module dependencies to the variable (in order to link it to the test-module)
 			FOREACH(current_dependency ${${CURRENT_MODULE_NAME}_DEPENDENCIES})
-				SET(collected_dependencies_test "${collected_dependencies_test}" ${${current_dependency}_LIBRARIES} ${${current_dependency}_PACKAGE_LIBS})
+				SET(collected_dependencies_test "${collected_dependencies_test}" ${${current_dependency}_LIBRARIES})
 			ENDFOREACH()
 			
 			IF(NOT "${collected_dependencies_test}" STREQUAL "")
@@ -199,7 +204,8 @@ ENDMACRO(INTERNAL_COLLECT_DEPENDENCIES_TEST)
 
 
 MACRO(INTERNAL_COLLECT_DEPENDENCY_DIRS)
-	SET(collected_dependency_dirs "${${CURRENT_MODULE_NAME}_PACKAGE_LIB_DIRS}")
+    MESSAGE(VERBOSE INTERNAL_COLLECT_DEPENDENCY_DIRS "${CURRENT_MODULE_NAME}_LIBRARY_DIRS=${${CURRENT_MODULE_NAME}_LIBRARY_DIRS}")
+	SET(collected_dependency_dirs "${${CURRENT_MODULE_NAME}_LIBRARY_DIRS}")
 	INTERNAL_LIST_REMOVE_ITEM(collected_dependency_dirs "")
 	
 	IF(NOT "${collected_dependency_dirs}" STREQUAL "")
@@ -210,12 +216,12 @@ ENDMACRO(INTERNAL_COLLECT_DEPENDENCY_DIRS)
 
 MACRO(INTERNAL_COLLECT_DEPENDENCY_DIRS_TEST)
 	SET(collected_dependency_dirs_test ${collected_dependency_dirs})
-	
+
 	IF(NOT "${${CURRENT_MODULE_NAME}_TEST_FILES}" STREQUAL "")
 		IF(${CONFIG_BUILD_UNITTESTS})
 			# Add libraries of the module dependencies to the variable (in order to link it to the test-module)
 			FOREACH(current_dependency ${${CURRENT_MODULE_NAME}_DEPENDENCIES})
-				SET(collected_dependency_dirs_test "${collected_dependency_dirs_test}" "${${CURRENT_MODULE_NAME}_PACKAGE_LIB_DIRS}")
+				SET(collected_dependency_dirs_test "${collected_dependency_dirs_test}" "${${CURRENT_MODULE_NAME}_LIBRARY_DIRS}")
 			ENDFOREACH()
 		ENDIF()
 	ENDIF()
@@ -271,7 +277,6 @@ MACRO(INTERNAL_ADD_MODULE_TARGET)
 		STATIC
 		${${CURRENT_UPPER_MODULE_NAME}_MODULE_SOURCE_FILES}
 		)
-		SET(GLOBAL_EXTERNAL_LIBRARY_LIBRARIES ${GLOBAL_EXTERNAL_LIBRARY_LIBRARIES} ${CURRENT_MODULE_NAME}  CACHE INTERNAL "global list of all variables which indicate the libraries of external libraries")
 		SET(${CURRENT_MODULE_NAME}_LIBRARIES ${CURRENT_MODULE_NAME} CACHE INTERNAL "")
 		MESSAGE(VERBOSE "${CURRENT_MODULE_NAME}_LIBRARIES = ${${CURRENT_MODULE_NAME}_LIBRARIES}")
 		
@@ -318,14 +323,7 @@ ENDMACRO(INTERNAL_ADD_DEPENDENCIES_TO_MODULE_TARGET)
 
 MACRO(INTERNAL_LINK_LIBRARIES_TO_MODULE_TARGET)
 	IF(NOT "${CURRENT_MODULE_TYPE}" STREQUAL "STATIC")
-		# build list of all libraries of all collected deps
-		SET(LIBS_OF_ALL_DEPENDENCIES "")
-		FOREACH(currentDep ${collected_dependencies})
-			SET(CURRENT_LIBS ${${currentDep}_LIBRARIES})
-			MESSAGE(VERBOSE "Linking libraries: ${currentDep}_LIBRARIES = ${${currentDep}_LIBRARIES}")
-			SET(LIBS_OF_ALL_DEPENDENCIES ${LIBS_OF_ALL_DEPENDENCIES} ${CURRENT_LIBS} CACHE INTERNAL "")
-		ENDFOREACH()
-		TARGET_LINK_LIBRARIES(${CURRENT_MODULE_NAME} ${LIBS_OF_ALL_DEPENDENCIES} ${${CURRENT_MODULE_NAME}_LIBRARIES})
+		TARGET_LINK_LIBRARIES(${CURRENT_MODULE_NAME} ${collected_libs})
 	ENDIF()
 ENDMACRO(INTERNAL_LINK_LIBRARIES_TO_MODULE_TARGET)
 
@@ -455,12 +453,3 @@ MACRO(INTERNAL_ADD_FLAGS_TO_TEST_TARGET)
 	INTERNAL_ADD_DEBUG_DEFINITIONS_TO_TARGET(${CURRENT_MODULE_NAME}Test ${${CURRENT_MODULE_NAME}_DEBUG_DEFINITIONS})
 	INTERNAL_ADD_RELEASE_DEFINITIONS_TO_TARGET(${CURRENT_MODULE_NAME}Test ${${CURRENT_MODULE_NAME}_RELEASE_DEFINITIONS})
 ENDMACRO(INTERNAL_ADD_FLAGS_TO_TEST_TARGET)
-
-
-MACRO(INTERNAL_DOIT_REMOVE_DUPLICATES)
-	LIST(LENGTH GoogleMock_PACKAGE_LIBS ListLength)
-	IF(NOT  ${ListLength} EQUAL 0)
-		LIST(REMOVE_DUPLICATES GoogleMock_PACKAGE_LIBS)
-		SET(GoogleMock_PACKAGE_LIBS  ${GoogleMock_PACKAGE_LIBS}	CACHE INTERNAL "")
-	ENDIF()
-ENDMACRO(INTERNAL_DOIT_REMOVE_DUPLICATES)

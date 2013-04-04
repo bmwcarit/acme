@@ -13,6 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+ 
+#include "TestDependencyOnOnlyHeaders_TheDependency/ClassInDependency.h"
 
-#include "TestDependencyONLYHEADERS_CantLinkDouble2/DoubleCantLinkAgainHeader.h"
 
+
+int main(){
+	ClassInDependency classInDependency;
+	int value = classInDependency.APublicMethod();
+}

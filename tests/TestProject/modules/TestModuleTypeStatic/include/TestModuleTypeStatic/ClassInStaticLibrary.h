@@ -13,6 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-#include "TestDependencyONLYHEADERS_CantLinkDouble2/DoubleCantLinkAgainHeader.h"
-
+ 
+class ClassInStaticLibrary 
+{
+    public:
+    virtual void method();
+};

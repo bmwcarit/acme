@@ -22,8 +22,6 @@
  int main(){
      DoubleCantLinkAgainClass s;
      s.someNumber = 42;
-     DoubleCantLinkAgainClass2 s2;
-     s2.someNumber = 42;
      int val = multipleDefinedSymbol();
      printf("%i", val);
      return 0;

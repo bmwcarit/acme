@@ -172,7 +172,7 @@ ENDFUNCTION(ACME_OPTIONAL_PACKAGE)
 #			[${CURRENT_MODULE_NAME}_DEBUG_DEFINITIONS]		
 # \details 	--------------------------------------------------------------------------------------------------------------------\n \n
 FUNCTION(ACME_ADD_DEPENDENCY ad_name)
-	INTERNAL_ADD_DEPENDENCY("${ad_name}")
+	INTERNAL_ADD_DEPENDENCY(${ad_name} ${ARGN})
 ENDFUNCTION(ACME_ADD_DEPENDENCY)
 
 ##
@@ -326,7 +326,7 @@ ENDFUNCTION(ACME_ADD_OPTIONAL_FILE)
 # \modifies ${CURRENT_MODULE_NAME}_LIBRARIES
 # \details 	--------------------------------------------------------------------------------------------------------------------\n \n
 FUNCTION(ACME_LINK_LIBRARY ll_name)
-	INTERNAL_LINK_LIBRARY("${ll_name}" ${ARGN})
+	INTERNAL_ADD_LIBRARY_TO_CURRENT_MODULE("${ll_name}" ${ARGN})
 ENDFUNCTION(ACME_LINK_LIBRARY ll_name)
 
 ##

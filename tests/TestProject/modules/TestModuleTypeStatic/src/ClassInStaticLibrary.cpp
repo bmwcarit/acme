@@ -14,8 +14,6 @@
  * limitations under the License.
  */
  
-class ClassInStaticLibrary 
-{
-    public:
-    virtual void method(){};
-};
+ #include "TestModuleTypeStatic/ClassInStaticLibrary.h"
+ 
+void ClassInStaticLibrary::method(){};

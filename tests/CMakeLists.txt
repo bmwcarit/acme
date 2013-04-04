@@ -73,7 +73,7 @@ FUNCTION(CONFIGURE_TESTPROJECT)
 		MESSAGE("Using CMAKE_INSTALL_PREFIX: ${CURRENT_INSTALL_PREFIX}")
 	ENDIF()
 	
-	execute_process(COMMAND cmake --config ${CURRENT_CONFIG} ../../TestProject -DCMAKE_TOOLCHAIN_FILE=${TOOLCHAINFILE} ${INSTALL_DIRECTIVE} -DCMAKE_BUILD_TYPE=${CURRENT_CONFIG} 
+	execute_process(COMMAND cmake --config ${CURRENT_CONFIG} ../../TestProject -DCONFIG_VERBOSE=1 -DCMAKE_TOOLCHAIN_FILE=${TOOLCHAINFILE} ${INSTALL_DIRECTIVE} -DCMAKE_BUILD_TYPE=${CURRENT_CONFIG} 
 			WORKING_DIRECTORY "${CURRENT_BUILD_DIR}"
 			OUTPUT_VARIABLE output
 			ERROR_VARIABLE output
@@ -146,16 +146,14 @@ TEST_BUILD(TestIndirectDependencies_Indirect_Dynamic "Indirect dependency on dyn
 TEST_BUILD(TestIndirectDependencies_Direct "Start of indirect dependency chain")
 TEST_BUILD(TestIndirectDependencies "Indirect dependency chain an multiple projects in a row of different types")
 TEST_BUILD(TestDependencyOnAnExternalACME "Dependency on another ACME project")
+TEST_BUILD(TestDependencyONLYHEADERS "ADD_DEPENDENCY(X ONLY_HEADERS) does not link other module")
 
 SET(ExpectedFilename "${CURRENT_BUILD_DIR}/externals/lib/${CMAKE_STATIC_LIBRARY_PREFIX}ExternalACMEModule${CMAKE_STATIC_LIBRARY_SUFFIX}")
 message("file: ${ExpectedFilename}")
 MESSAGE("ACME lib exists")
 ASSERT(EXISTS ${ExpectedFilename})
 
-MESSAGE("ACME lib does not exist in deliverable before install")
 SET(DeliverableFilename "${CURRENT_BUILD_DIR}/../../TestProject/deliverable/Windows_X86_32/lib/${CMAKE_STATIC_LIBRARY_PREFIX}ExternalACMEModule${CMAKE_STATIC_LIBRARY_SUFFIX}")
-ASSERT_FALSE(EXISTS ${DeliverableFilename})
-
 TEST_BUILD(install "Install project")
 MESSAGE("ACME lib exists in deliverable after install")
 ASSERT(EXISTS ${DeliverableFilename})
