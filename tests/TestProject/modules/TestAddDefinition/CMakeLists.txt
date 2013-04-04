@@ -14,9 +14,9 @@
 # limitations under the License.
 #
 
-ACME_ADD_SUBDIRECTORY(TestModuleTypeExe)
-ACME_ADD_SUBDIRECTORY(TestModuleTypeStatic)
-ACME_ADD_SUBDIRECTORY(TestModuleTypeDynamic)
-ACME_ADD_SUBDIRECTORY(TestAddDebugDefinition)
-ACME_ADD_SUBDIRECTORY(TestAddReleaseDefinition)
-ACME_ADD_SUBDIRECTORY(TestAddDefinition)
+ACME_ADD_MODULE(TestAddDefinition static)
+
+ACME_ADD_FILE(ReturnDefinition)
+
+# This tests if only appropriate definitions are set
+ACME_ADD_DEFINITION(SHOULD_BE_CLOSING_BRACKET_DEFINITION=})
