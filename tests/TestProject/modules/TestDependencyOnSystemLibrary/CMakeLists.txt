@@ -14,15 +14,8 @@
 # limitations under the License.
 #
 
-ACME_ADD_SUBDIRECTORY(TestModuleTypeExe)
-ACME_ADD_SUBDIRECTORY(TestModuleTypeStatic)
-ACME_ADD_SUBDIRECTORY(TestModuleTypeDynamic)
-ACME_ADD_SUBDIRECTORY(TestAddDebugDefinition)
-ACME_ADD_SUBDIRECTORY(TestAddReleaseDefinition)
-ACME_ADD_SUBDIRECTORY(TestAddDefinition)
-ACME_ADD_SUBDIRECTORY(TestDefinitionsSetByACME)
-ACME_ADD_SUBDIRECTORY(TestAutomaticTestProjects)
-ACME_ADD_SUBDIRECTORY(TestDependencyAutolink)
-ACME_ADD_SUBDIRECTORY(TestDependencyAutolink_TheDependency)
-ACME_ADD_SUBDIRECTORY(TestDependencyOnAnExternalCmake)
-ACME_ADD_SUBDIRECTORY(TestDependencyOnSystemLibrary)
+ACME_ADD_MODULE(TestDependencyOnSystemLibrary exe)
+
+ACME_ADD_DEPENDENCY(Thread) # uses find_package(Threads) to get needed lib names, includes etc
+
+ACME_ADD_FILE(arch/${TARGET_OS}/ClassThatUsesThread)

@@ -132,7 +132,7 @@ MACRO(INTERNAL_COLLECT_DEPENDENCIES)
 	IF(${${CURRENT_MODULE_NAME}_HAS_SOURCE_FILES})
 		IF(NOT "${${CURRENT_MODULE_NAME}_DEPENDENCIES}" STREQUAL "")
 			FOREACH(current_dependency ${${CURRENT_MODULE_NAME}_DEPENDENCIES})
-				SET(collected_dependencies ${collected_dependencies} ${${current_dependency}_PACKAGE_LIBS} ${current_dependency})
+				SET(collected_dependencies ${collected_dependencies} ${${current_dependency}_PACKAGE_LIBS} ${${current_dependency}_LIBRARIES} ${current_dependency})
 			ENDFOREACH()	
 			
 			LIST(LENGTH collected_dependencies jd_length)
@@ -317,7 +317,7 @@ ENDMACRO(INTERNAL_ADD_DEPENDENCIES_TO_MODULE_TARGET)
 
 
 MACRO(INTERNAL_LINK_LIBRARIES_TO_MODULE_TARGET)
-	IF(NOT "${${CURRENT_MODULE_NAME}_LIBRARIES}" STREQUAL "" AND NOT "${CURRENT_MODULE_TYPE}" STREQUAL "STATIC")
+	IF(NOT "${CURRENT_MODULE_TYPE}" STREQUAL "STATIC")
 		# build list of all libraries of all collected deps
 		SET(LIBS_OF_ALL_DEPENDENCIES "")
 		FOREACH(currentDep ${collected_dependencies})
