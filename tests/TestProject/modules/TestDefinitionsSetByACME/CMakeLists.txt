@@ -14,10 +14,6 @@
 # limitations under the License.
 #
 
-ACME_ADD_SUBDIRECTORY(TestModuleTypeExe)
-ACME_ADD_SUBDIRECTORY(TestModuleTypeStatic)
-ACME_ADD_SUBDIRECTORY(TestModuleTypeDynamic)
-ACME_ADD_SUBDIRECTORY(TestAddDebugDefinition)
-ACME_ADD_SUBDIRECTORY(TestAddReleaseDefinition)
-ACME_ADD_SUBDIRECTORY(TestAddDefinition)
-ACME_ADD_SUBDIRECTORY(TestDefinitionsSetByACME)
+ACME_ADD_MODULE(TestDefinitionsSetByACME static)
+
+ACME_ADD_FILE(ReturnDefinition)
