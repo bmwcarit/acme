@@ -417,6 +417,17 @@ MACRO(INTERNAL_COPY_RESOURCE_FILES)
 			INTERNAL_LIST_REMOVE_ITEM(jdi_ressource_files ${jdi_exclude_files})
 		ENDIF()
 		INSTALL(FILES ${jdi_ressource_files} DESTINATION "res")
+        add_custom_command(TARGET ${CURRENT_MODULE_NAME} POST_BUILD
+                COMMAND ${CMAKE_COMMAND} -E make_directory
+                "${CMAKE_RESOURCE_OUTPUT_DIRECTORY}/"
+                )
+        FOREACH(file ${jdi_ressource_files})
+            add_custom_command(TARGET ${CURRENT_MODULE_NAME} POST_BUILD
+                COMMAND ${CMAKE_COMMAND} -E copy_if_different
+                ${file}
+                "${CMAKE_RESOURCE_OUTPUT_DIRECTORY}/"
+                )
+        ENDFOREACH()
 ENDMACRO(INTERNAL_COPY_RESOURCE_FILES)
 
 
@@ -432,8 +443,16 @@ ENDMACRO(INTERNAL_COPY_DOC_FILES)
 
 
 MACRO(INTERNAL_COPY_INSTALL_FILES)
+
 	IF(NOT "${${CURRENT_MODULE_NAME}_INSTALL_FILES}" STREQUAL "")
-		INSTALL(FILES ${${CURRENT_MODULE_NAME}_INSTALL_FILES} DESTINATION "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/\${BUILD_TYPE}")
+		INSTALL(FILES ${${CURRENT_MODULE_NAME}_INSTALL_FILES} DESTINATION "bin")
+        FOREACH(file ${${CURRENT_MODULE_NAME}_INSTALL_FILES})
+            add_custom_command(TARGET ${CURRENT_MODULE_NAME} POST_BUILD
+                COMMAND ${CMAKE_COMMAND} -E copy_if_different
+                ${file}
+                "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/"
+                )
+        ENDFOREACH()
 	ENDIF()
 ENDMACRO(INTERNAL_COPY_INSTALL_FILES)
 

@@ -14,10 +14,8 @@
 # limitations under the License.
 #
 
-ACME_ADD_MODULE(mainProgram exe)
+ACME_ADD_MODULE(TestAddInstallFile static)
 
-ACME_ADD_DEPENDENCY(ModuleA)
-ACME_ADD_DEPENDENCY(ModuleThatDependsOnASystemLibrary)
-ACME_ADD_DEPENDENCY(ModuleThatDependsOnAnExternalCmake)
-ACME_ADD_DEPENDENCY(ModuleThatOnlyHasPublicHeaders)
 ACME_ADD_FILE(main)
+
+ACME_ADD_INSTALL_FILE("${CMAKE_CURRENT_SOURCE_DIR}/testInstallFile.txt")

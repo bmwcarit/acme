@@ -14,29 +14,8 @@
  * limitations under the License.
  */
  
-#include "ModuleA/ModuleAPublic.h"
-#include "ModuleThatDependsOnASystemLibrary/ClassThatUsesThread.h"
-#include "ModuleThatDependsOnAnExternalCmake/ClassThatUsesExternalLib.h"
-#include "ModuleThatOnlyHasPublicHeaders/APublicHeader.h"
-
-class Concrete : public APublicInterface
-{
-    public:
-	virtual void someInterfaceMethod(){};
-};
-
 
 
 int main(){
-	ModuleAPublic a;
-	int value = a.doSomething();
-
-    ClassThatUsesThread thread;
-    thread.runAThread();
-
-    ClassThatUsesExternalLib externalLib;
-    externalLib.useExternalLib();
-	
-	Concrete c;
-	c.someInterfaceMethod();
+return 0;
 }

@@ -18,7 +18,7 @@
 # checks on the results of building like paths, targets etc
 
 
-cmake_minimum_required (VERSION 2.8.10)
+cmake_minimum_required (VERSION 2.8.9)
 
 project (RunAllTests)
 
@@ -68,21 +68,20 @@ MESSAGE("Deleting file: ${FileToDelete}")
 ENDFUNCTION(DELETE_FILE)
 
 FUNCTION(CONFIGURE_TESTPROJECT)
-	SET(BUILD_DIR_WITH ${CURRENT_BUILD_DIR}/${CURRENT_CONFIG})
-	MESSAGE("Create build directory: ${BUILD_DIR_WITH}")
-	execute_process(COMMAND cmake -E make_directory "${BUILD_DIR_WITH}"
+	MESSAGE("Create build directory: ${CURRENT_BUILD_DIR}")
+	execute_process(COMMAND cmake -E make_directory "${CURRENT_BUILD_DIR}"
 			OUTPUT_VARIABLE output
 			ERROR_VARIABLE output
 			RESULT_VARIABLE retValue)
 	ASSERT(retValue EQUAL 0 "")
 
-	MESSAGE("Testproject configure")
+	MESSAGE("Testproject configure (config: ${CURRENT_CONFIG}, prefix: ${CURRENT_INSTALL_PREFIX})")
 	IF(NOT ${CURRENT_INSTALL_PREFIX} STREQUAL "")
 		SET(INSTALL_DIRECTIVE -DCMAKE_INSTALL_PREFIX=${CURRENT_INSTALL_PREFIX})
 		MESSAGE("Using CMAKE_INSTALL_PREFIX: ${CURRENT_INSTALL_PREFIX}")
 	ENDIF()
 	
-	execute_process(COMMAND cmake --config ${CURRENT_CONFIG} ../../TestProject -DCMAKE_TOOLCHAIN_FILE=${TOOLCHAINFILE} -DCONFIG_VERBOSE=1 ${INSTALL_DIRECTIVE} -DCMAKE_BUILD_TYPE=${CURRENT_CONFIG} 
+	execute_process(COMMAND cmake --config ${CURRENT_CONFIG} ../../TestProject -DCMAKE_TOOLCHAIN_FILE=${TOOLCHAINFILE} -DCONFIG_VERBOSE=1 ${INSTALL_DIRECTIVE} -DCMAKE_BUILD_TYPE=${CURRENT_CONFIG}
 			WORKING_DIRECTORY "${CURRENT_BUILD_DIR}"
 			OUTPUT_VARIABLE output
 			ERROR_VARIABLE output
@@ -94,7 +93,7 @@ FUNCTION(CONFIGURE_TESTPROJECT)
 ENDFUNCTION(CONFIGURE_TESTPROJECT)
 
 FUNCTION(RUN_TEST NAME)
-	SET(executableFilename "${CURRENT_BUILD_DIR}/TestProject/bin/${OSNAME}_X86_32/${CURRENT_CONFIG}/${NAME}")
+	SET(executableFilename "${CURRENT_BUILD_DIR}/TestProject/${OSNAME}_X86_32/${CURRENT_CONFIG}/bin/${NAME}")
 	MESSAGE("Run test: ${executableFilename}")
 	execute_process(COMMAND ${executableFilename}
 			OUTPUT_VARIABLE output
@@ -119,20 +118,51 @@ MESSAGE("Using toolchain for tests: ${TOOLCHAINFILE}")
 INCLUDE(${TOOLCHAINFILE})
 MESSAGE("Running acme tests from ${CMAKE_CURRENT_SOURCE_DIR}")
 MESSAGE("-------------------------")
+
+FUNCTION(TestResourceAndInstallFilesWithConfiguration)
+    MESSAGE("Testing resources and install files with configuration: ${CURRENT_CONFIG} and prefix: ${CURRENT_INSTALL_PREFIX}")
+
+    TEST_BUILD(TestResources "Files in /res are copied to build directory (${CURRENT_CONFIG})")
+    MESSAGE("Resources exists in build directory")
+    SET(resFileInBuildDir "${CURRENT_BUILD_DIR}/TestProject/${OSNAME}_X86_32/${CURRENT_CONFIG}/res/AResourceFile.txt")
+    ASSERT(EXISTS ${resFileInBuildDir})
+
+    TEST_BUILD(TestAddInstallFile "Add install file (${CURRENT_CONFIG})")
+    MESSAGE("Install files exists in build directory")
+    SET(InstallFile "${CURRENT_BUILD_DIR}/TestProject/${OSNAME}_X86_32/${CURRENT_CONFIG}/bin/testInstallFile.txt")
+    ASSERT(EXISTS ${InstallFile})
+
+    TEST_BUILD(install "Install project into given installprefix")
+    MESSAGE("Resources are installed (${CURRENT_CONFIG})")
+    SET(resFileInInstallDir "${CURRENT_BUILD_DIR}/../../TestProject/deliverable/${OSNAME}_X86_32/${CURRENT_CONFIG}/res/AResourceFile.txt")
+    ASSERT(EXISTS ${resFileInInstallDir})
+    
+    MESSAGE("Install files are installed (${CURRENT_CONFIG})")
+    SET(InstallFileAfterInstall "${CURRENT_BUILD_DIR}/../../TestProject/deliverable/${OSNAME}_X86_32/${CURRENT_CONFIG}/bin/testInstallFile.txt")
+    ASSERT(EXISTS ${InstallFileAfterInstall})
+ENDFUNCTION(TestResourceAndInstallFilesWithConfiguration)
+
 ##############################
 # Run tests                  #
 ##############################
 
 ## DEBUG TESTS
-SET(CURRENT_BUILD_DIR ${PROJECT_BINARY_DIR}/TestProjectBuild)
+SET(CURRENT_BUILD_DIR ${PROJECT_BINARY_DIR}/TestProjectBuild_Debug)
 SET(CURRENT_CONFIG Debug)
 SET(CURRENT_INSTALL_PREFIX "")
 CONFIGURE_TESTPROJECT()
+
+TestResourceAndInstallFilesWithConfiguration()
+
 TEST_BUILD(TestAddDebugDefinitionTest "AddDebugDefinition")
 RUN_TEST(TestAddDebugDefinitionTest)
 
-SET(CURRENT_CONFIG "Release")
+## RELEASE TESTS
+SET(CURRENT_CONFIG Release)
+SET(CURRENT_BUILD_DIR ${PROJECT_BINARY_DIR}/TestProjectBuild_Release)
 CONFIGURE_TESTPROJECT()
+TestResourceAndInstallFilesWithConfiguration()
+
 TEST_BUILD(TestModuleTypeExe "Simple executable from sources")
 TEST_BUILD(TestModuleTypeStatic "Simple static library from sources")
 TEST_BUILD(TestModuleTypeDynamic "Simple dynamic library from sources")
@@ -169,7 +199,7 @@ message("file: ${ExpectedFilename}")
 MESSAGE("ACME lib exists")
 ASSERT(EXISTS ${ExpectedFilename})
 
-SET(DeliverableFilename "${CURRENT_BUILD_DIR}/../../TestProject/deliverable/${OSNAME}_X86_32/lib/${CMAKE_STATIC_LIBRARY_PREFIX}ExternalACMEModule${CMAKE_STATIC_LIBRARY_SUFFIX}")
+SET(DeliverableFilename "${CURRENT_BUILD_DIR}/../../TestProject/deliverable/${OSNAME}_X86_32/${CURRENT_CONFIG}/lib/${CMAKE_STATIC_LIBRARY_PREFIX}ExternalACMEModule${CMAKE_STATIC_LIBRARY_SUFFIX}")
 TEST_BUILD(install "Install project")
 MESSAGE("ACME lib exists in deliverable after install")
 ASSERT(EXISTS ${DeliverableFilename})
