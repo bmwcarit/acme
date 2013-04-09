@@ -143,6 +143,38 @@ FUNCTION(TestResourceAndInstallFilesWithConfiguration)
 ENDFUNCTION(TestResourceAndInstallFilesWithConfiguration)
 
 ##############################
+# Preparations               #
+##############################
+
+# Build an external library to be used for testing Add_External_library method
+MESSAGE("Create test external library")
+execute_process(COMMAND cmake -E make_directory "${PROJECT_BINARY_DIR}/ExternalLibraryBuild"
+        OUTPUT_VARIABLE output
+        ERROR_VARIABLE output
+        RESULT_VARIABLE retValue)
+ASSERT(retValue EQUAL 0 "")
+
+execute_process(COMMAND cmake --config Release ../../ExternalLibrary -DCMAKE_INSTALL_PREFIX=../../ExternalLibrary/built/${OSNAME}_Release -DCMAKE_BUILD_TYPE=Release
+        WORKING_DIRECTORY "${PROJECT_BINARY_DIR}/ExternalLibraryBuild"
+        OUTPUT_VARIABLE output
+        ERROR_VARIABLE output
+        RESULT_VARIABLE retValue)
+ASSERT(retValue EQUAL 0)
+IF(NOT retValue EQUAL 0)
+    MESSAGE("Output: ${output}")
+ENDIF()
+
+execute_process(COMMAND cmake --build . --target install --config Release
+		WORKING_DIRECTORY "${PROJECT_BINARY_DIR}/ExternalLibraryBuild"
+		OUTPUT_VARIABLE output
+		ERROR_VARIABLE output
+		RESULT_VARIABLE retValue)
+ASSERT(retValue EQUAL 0)
+IF(NOT retValue EQUAL 0)
+    MESSAGE("Output: ${output}")
+ENDIF()
+
+##############################
 # Run tests                  #
 ##############################
 
@@ -152,6 +184,7 @@ SET(CURRENT_CONFIG Debug)
 SET(CURRENT_INSTALL_PREFIX "")
 CONFIGURE_TESTPROJECT()
 
+TEST_BUILD(TestAddExternalLibrary "TestAddExternalLibrary")
 TestResourceAndInstallFilesWithConfiguration()
 
 TEST_BUILD(TestAddDebugDefinitionTest "AddDebugDefinition")

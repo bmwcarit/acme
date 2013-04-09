@@ -14,6 +14,7 @@
 # limitations under the License.
 #
 
+ACME_ADD_SUBDIRECTORY(TestAddExternalLibrary)
 ACME_ADD_SUBDIRECTORY(TestAddInstallFile)
 ACME_ADD_SUBDIRECTORY(TestResources)
 ACME_ADD_SUBDIRECTORY(TestModuleTypeExe)

@@ -54,7 +54,9 @@ MACRO(INTERNAL_JUST_DOIT)
 		INTERNAL_COLLECT_RES_FILES()						# sets the local variable "resource_files"
 		INTERNAL_ADD_CORRECT_CMAKELIST()					# adds correct "CMakeList.txt" to "${CURRENT_UPPER_MODULE_NAME}_MODULE_SOURCE_FILES"
 		INTERNAL_COLLECT_PACKAGE_LINK_DIRECTORIES()			# sets the local variable "external_package_link_directories"
-		
+
+        LINK_DIRECTORIES(${collected_dependency_dirs})
+
 		IF(${${CURRENT_MODULE_NAME}_HAS_SOURCE_FILES})
 			# Create actual cmake target and add properties to them
 			INTERNAL_ADD_MODULE_TARGET()					# adds the "${${CURRENT_UPPER_MODULE_NAME}_MODULE_SOURCE_FILES}" to the generated library or executable target
@@ -78,7 +80,7 @@ MACRO(INTERNAL_JUST_DOIT)
 						ENDIF()
 					ENDIF()			
 			
-					LINK_DIRECTORIES(${GoogleTest_LIBRARIES_DIR} ${GoogleMock_LIBRARIES_DIR} ${external_package_link_directories})
+					LINK_DIRECTORIES(${GoogleTest_LIBRARY_DIRS} ${GoogleMock_LIBRARY_DIRS} ${external_package_link_directories})
 					ADD_EXECUTABLE(${CURRENT_MODULE_NAME}Test ${${CURRENT_MODULE_NAME}_TEST_FILES} ${${CURRENT_MODULE_NAME}_TEST_MAIN})
 					SET_TARGET_PROPERTIES(${CURRENT_MODULE_NAME}Test PROPERTIES INCLUDE_DIRECTORIES "${intern_include_path};${include_dirs};${test_path};${GoogleTest_INCLUDE_DIRS};${GoogleMock_INCLUDE_DIRS}")
 					INTERNAL_ADD_FLAGS_TO_TEST_TARGET()
@@ -205,6 +207,13 @@ MACRO(INTERNAL_COLLECT_DEPENDENCY_DIRS)
 	IF(NOT "${collected_dependency_dirs}" STREQUAL "")
 		LIST(REMOVE_DUPLICATES collected_dependency_dirs)
 	ENDIF()
+    
+    IF(NOT "${${CURRENT_MODULE_NAME}_DEPENDENCIES}" STREQUAL "")
+        FOREACH(current_dependency ${${CURRENT_MODULE_NAME}_DEPENDENCIES})
+            SET(collected_dependency_dirs ${collected_dependency_dirs} ${${current_dependency}_LIBRARY_DIRS})
+        ENDFOREACH()	
+    ENDIF()
+    MESSAGE(VERBOSE INTERNAL_COLLECT_DEPENDENCY_DIRS END "${CURRENT_MODULE_NAME}_LIBRARY_DIRS=${${CURRENT_MODULE_NAME}_LIBRARY_DIRS}")
 ENDMACRO(INTERNAL_COLLECT_DEPENDENCY_DIRS)
 
 
@@ -253,14 +262,12 @@ ENDMACRO(INTERNAL_ADD_CORRECT_CMAKELIST)
 
 
 MACRO(INTERNAL_COLLECT_PACKAGE_LINK_DIRECTORIES)
-	IF(NOT "${${CURRENT_MODULE_NAME}_TEST_FILES}" STREQUAL "")
 		SET(external_package_link_directories "")
 		FOREACH(current_dependency ${${CURRENT_MODULE_NAME}_DEPENDENCIES})
-			IF(DEFINED ${current_dependency}_LIBRARIES_DIR)
-				SET(external_package_link_directories ${external_package_link_directories} "${${current_dependency}_LIBRARIES_DIR}")
+			IF(DEFINED ${current_dependency}_LIBRARY_DIRS)
+				SET(external_package_link_directories ${external_package_link_directories} "${${current_dependency}_LIBRARY_DIRS}")
 			ENDIF()
 		ENDFOREACH()	
-	ENDIF()
 ENDMACRO(INTERNAL_COLLECT_PACKAGE_LINK_DIRECTORIES)
 
 
