@@ -124,7 +124,7 @@ FUNCTION(TestResourceAndInstallFilesWithConfiguration)
 
     TEST_BUILD(TestResources "Files in /res are copied to build directory (${CURRENT_CONFIG})")
     MESSAGE("Resources exists in build directory")
-    SET(resFileInBuildDir "${CURRENT_BUILD_DIR}/TestProject/${OSNAME}_X86_32/${CURRENT_CONFIG}/res/AResourceFile.txt")
+    SET(resFileInBuildDir "${CURRENT_BUILD_DIR}/TestProject/${OSNAME}_X86_32/${CURRENT_CONFIG}/res/TestResources/AResourceFile.txt")
     ASSERT(EXISTS ${resFileInBuildDir})
 
     TEST_BUILD(TestAddInstallFile "Add install file (${CURRENT_CONFIG})")
@@ -134,7 +134,7 @@ FUNCTION(TestResourceAndInstallFilesWithConfiguration)
 
     TEST_BUILD(install "Install project into given installprefix")
     MESSAGE("Resources are installed (${CURRENT_CONFIG})")
-    SET(resFileInInstallDir "${CURRENT_BUILD_DIR}/../../TestProject/deliverable/${OSNAME}_X86_32/${CURRENT_CONFIG}/res/AResourceFile.txt")
+    SET(resFileInInstallDir "${CURRENT_BUILD_DIR}/../../TestProject/deliverable/${OSNAME}_X86_32/${CURRENT_CONFIG}/res/TestResources/AResourceFile.txt")
     ASSERT(EXISTS ${resFileInInstallDir})
     
     MESSAGE("Install files are installed (${CURRENT_CONFIG})")
