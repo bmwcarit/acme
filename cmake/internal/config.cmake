@@ -54,6 +54,12 @@ SET(GLOBAL_EXTERNAL_LIBRARIES_INSTALL_DIR "${GLOBAL_TOP_LEVEL_BINARY_DIR}/extern
 
 # Initialize CMAKE variables
 
+IF(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
+    message(STATUS "Build = 'Debug' as default.")
+    set(CMAKE_BUILD_TYPE Debug CACHE STRING "BUILD_TYPE" FORCE)
+    set_property(CACHE CMAKE_BUILD_TYPE PROPERTY STRINGS "Debug" "Release")
+ENDIF()
+
 IF(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
     IF("${TARGET_OS}" STREQUAL "Windows")
         SET(CMAKE_INSTALL_PREFIX "${GLOBAL_TOP_LEVEL_SOURCE_DIR}/deliverable/${TARGET_OS}_${TARGET_ARCH}/\${BUILD_TYPE}" CACHE PATH "install directory used by install, default: /usr/local on UNIX and c:/Program Files on Windows" FORCE )
