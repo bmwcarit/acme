@@ -81,7 +81,7 @@ FUNCTION(CONFIGURE_TESTPROJECT)
 		MESSAGE("Using CMAKE_INSTALL_PREFIX: ${CURRENT_INSTALL_PREFIX}")
 	ENDIF()
 	
-	execute_process(COMMAND cmake --config ${CURRENT_CONFIG} ../../TestProject -DCMAKE_TOOLCHAIN_FILE=${TOOLCHAINFILE} -DCONFIG_VERBOSE=1 ${INSTALL_DIRECTIVE} -DCMAKE_BUILD_TYPE=${CURRENT_CONFIG}
+	execute_process(COMMAND cmake --config ${CURRENT_CONFIG} ${PROJECT_SOURCE_DIR}/TestProject -DCMAKE_TOOLCHAIN_FILE=${TOOLCHAINFILE} -DCONFIG_VERBOSE=1 ${INSTALL_DIRECTIVE} -DCMAKE_BUILD_TYPE=${CURRENT_CONFIG}
 			WORKING_DIRECTORY "${CURRENT_BUILD_DIR}"
 			OUTPUT_VARIABLE output
 			ERROR_VARIABLE output
@@ -108,15 +108,15 @@ ENDFUNCTION(RUN_TEST)
 #Choose variables and toolchain file based on os
 IF(UNIX)
     SET(OSNAME "Linux")
-	SET(TOOLCHAINFILE "${CMAKE_CURRENT_SOURCE_DIR}/../cmake/example_toolchains/nativeLinux_X86_32.toolchain")
+	SET(TOOLCHAINFILE "${PROJECT_SOURCE_DIR}/../cmake/example_toolchains/nativeLinux_X86_32.toolchain")
 ELSEIF(WIN32)
     SET(OSNAME "Windows")
-	SET(TOOLCHAINFILE "${CMAKE_CURRENT_SOURCE_DIR}/../cmake/example_toolchains/nativeWindows_X86_32.toolchain" CACHE FILEPATH "")
+	SET(TOOLCHAINFILE "${PROJECT_SOURCE_DIR}/../cmake/example_toolchains/nativeWindows_X86_32.toolchain" CACHE FILEPATH "")
 ENDIF()
 
 MESSAGE("Using toolchain for tests: ${TOOLCHAINFILE}")
 INCLUDE(${TOOLCHAINFILE})
-MESSAGE("Running acme tests from ${CMAKE_CURRENT_SOURCE_DIR}")
+MESSAGE("Running acme tests from ${PROJECT_SOURCE_DIR}")
 MESSAGE("-------------------------")
 
 FUNCTION(TestResourceAndInstallFilesWithConfiguration)
@@ -134,11 +134,11 @@ FUNCTION(TestResourceAndInstallFilesWithConfiguration)
 
     TEST_BUILD(install "Install project into given installprefix")
     MESSAGE("Resources are installed (${CURRENT_CONFIG})")
-    SET(resFileInInstallDir "${CURRENT_BUILD_DIR}/../../TestProject/deliverable/${OSNAME}_X86_32/${CURRENT_CONFIG}/res/TestResources/AResourceFile.txt")
+    SET(resFileInInstallDir "${PROJECT_SOURCE_DIR}/TestProject/deliverable/${OSNAME}_X86_32/${CURRENT_CONFIG}/res/TestResources/AResourceFile.txt")
     ASSERT(EXISTS ${resFileInInstallDir})
     
     MESSAGE("Install files are installed (${CURRENT_CONFIG})")
-    SET(InstallFileAfterInstall "${CURRENT_BUILD_DIR}/../../TestProject/deliverable/${OSNAME}_X86_32/${CURRENT_CONFIG}/bin/testInstallFile.txt")
+    SET(InstallFileAfterInstall "${PROJECT_SOURCE_DIR}/TestProject/deliverable/${OSNAME}_X86_32/${CURRENT_CONFIG}/bin/testInstallFile.txt")
     ASSERT(EXISTS ${InstallFileAfterInstall})
 ENDFUNCTION(TestResourceAndInstallFilesWithConfiguration)
 
@@ -154,7 +154,7 @@ execute_process(COMMAND cmake -E make_directory "${PROJECT_BINARY_DIR}/ExternalL
         RESULT_VARIABLE retValue)
 ASSERT(retValue EQUAL 0 "")
 
-execute_process(COMMAND cmake --config Release ../../ExternalLibrary -DCMAKE_INSTALL_PREFIX=../../ExternalLibrary/built/${OSNAME}_Release -DCMAKE_BUILD_TYPE=Release
+execute_process(COMMAND cmake --config Release ${PROJECT_SOURCE_DIR}/ExternalLibrary -DCMAKE_INSTALL_PREFIX=${PROJECT_SOURCE_DIR}/ExternalLibrary/built/${OSNAME}_Release -DCMAKE_BUILD_TYPE=Release
         WORKING_DIRECTORY "${PROJECT_BINARY_DIR}/ExternalLibraryBuild"
         OUTPUT_VARIABLE output
         ERROR_VARIABLE output
@@ -232,14 +232,14 @@ message("file: ${ExpectedFilename}")
 MESSAGE("ACME lib exists")
 ASSERT(EXISTS ${ExpectedFilename})
 
-SET(DeliverableFilename "${CURRENT_BUILD_DIR}/../../TestProject/deliverable/${OSNAME}_X86_32/${CURRENT_CONFIG}/lib/${CMAKE_STATIC_LIBRARY_PREFIX}ExternalACMEModule${CMAKE_STATIC_LIBRARY_SUFFIX}")
+SET(DeliverableFilename "${PROJECT_SOURCE_DIR}/TestProject/deliverable/${OSNAME}_X86_32/${CURRENT_CONFIG}/lib/${CMAKE_STATIC_LIBRARY_PREFIX}ExternalACMEModule${CMAKE_STATIC_LIBRARY_SUFFIX}")
 TEST_BUILD(install "Install project")
 MESSAGE("ACME lib exists in deliverable after install")
 ASSERT(EXISTS ${DeliverableFilename})
 
 SET(CURRENT_BUILD_DIR ${PROJECT_BINARY_DIR}/TestProjectBuildWithInstallPrefix)
 SET(CURRENT_CONFIG "Release")
-SET(CURRENT_INSTALL_PREFIX "${PROJECT_BINARY_DIR}/../MyInstallPrefix")
+SET(CURRENT_INSTALL_PREFIX "${PROJECT_SOURCE_DIR}/MyInstallPrefix")
 CONFIGURE_TESTPROJECT()
 
 TEST_BUILD(install "Install project into given installprefix")
