@@ -630,7 +630,23 @@ ENDFUNCTION(INTERNAL_LINK_LIBRARY_GROUP)
 
 
 FUNCTION(INTERNAL_ADD_INSTALL_FILE iaif_filename)
+	MESSAGE(VERBOSE "INTERNAL_ADD_INSTALL_FILE: Installing file in install target: ${iaif_filename}")
+    
+	IF(NOT IS_ABSOLUTE "${iaif_filename}")
+		MESSAGE(VERBOSE "INTERNAL_ADD_INSTALL_FILE: Given filename is not an absolute path.")
+		SET(iaif_filename "${CMAKE_CURRENT_SOURCE_DIR}/${iaif_filename}")
+	ENDIF()
+
 	SET(${CURRENT_MODULE_NAME}_INSTALL_FILES 	${${CURRENT_MODULE_NAME}_INSTALL_FILES} 	"${iaif_filename}" 								CACHE INTERNAL "")
+
+	MESSAGE(VERBOSE "INTERNAL_ADD_INSTALL_FILE: module list ${${CURRENT_MODULE_NAME}_INSTALL_FILES}")
+	
+	IF(${ARGC} GREATER 1)
+        SET(${CURRENT_MODULE_NAME}_${iaif_filename}_INSTALL_DIR ${ARGV1}	CACHE INTERNAL "")
+		MESSAGE(VERBOSE "INTERNAL_ADD_INSTALL_FILE: Custom installDir for ${iaif_filename} set to ${${CURRENT_MODULE_NAME}_${iaif_filename}_INSTALL_DIR}")
+	ENDIF()    
+	
+
 ENDFUNCTION(INTERNAL_ADD_INSTALL_FILE)
 
 

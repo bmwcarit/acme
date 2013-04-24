@@ -437,13 +437,27 @@ ENDMACRO(INTERNAL_COPY_DOC_FILES)
 MACRO(INTERNAL_COPY_INSTALL_FILES)
 
 	IF(NOT "${${CURRENT_MODULE_NAME}_INSTALL_FILES}" STREQUAL "")
-		INSTALL(FILES ${${CURRENT_MODULE_NAME}_INSTALL_FILES} DESTINATION "bin")
+		
+		
         FOREACH(file ${${CURRENT_MODULE_NAME}_INSTALL_FILES})
+			SET(subDir "")
+			IF (NOT "${${CURRENT_MODULE_NAME}_${file}_INSTALL_DIR}" STREQUAL "")
+				SET(subDir "${${CURRENT_MODULE_NAME}_${file}_INSTALL_DIR}/")
+				MESSAGE(VERBOSE "installing ${file} to ${subDir}")
+				
+				add_custom_command(TARGET ${CURRENT_MODULE_NAME} POST_BUILD
+					COMMAND ${CMAKE_COMMAND} -E make_directory
+					"${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${subDir}"
+                )
+			ENDIF()
+			
             add_custom_command(TARGET ${CURRENT_MODULE_NAME} POST_BUILD
                 COMMAND ${CMAKE_COMMAND} -E copy_if_different
                 ${file}
-                "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/"
+                "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${subDir}"
                 )
+				
+			INSTALL(FILES ${file} DESTINATION "bin/${subDir}")
         ENDFOREACH()
 	ENDIF()
 ENDMACRO(INTERNAL_COPY_INSTALL_FILES)

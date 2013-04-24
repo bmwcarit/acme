@@ -129,7 +129,16 @@ FUNCTION(TestResourceAndInstallFilesWithConfiguration)
 
     TEST_BUILD(TestAddInstallFile "Add install file (${CURRENT_CONFIG})")
     MESSAGE("Install files exists in build directory")
-    SET(InstallFile "${CURRENT_BUILD_DIR}/TestProject/${OSNAME}_X86_32/${CURRENT_CONFIG}/bin/testInstallFile.txt")
+	MESSAGE("Relative path")
+    SET(InstallFile "${CURRENT_BUILD_DIR}/TestProject/${OSNAME}_X86_32/${CURRENT_CONFIG}/bin/testInstallFileRelativePath.txt")
+    ASSERT(EXISTS ${InstallFile})
+	
+	MESSAGE("Absolute path")
+	SET(InstallFile "${CURRENT_BUILD_DIR}/TestProject/${OSNAME}_X86_32/${CURRENT_CONFIG}/bin/testInstallFileAbsolutePath.txt")
+    ASSERT(EXISTS ${InstallFile})
+	
+	MESSAGE("Custom install location in bin")
+	SET(InstallFile "${CURRENT_BUILD_DIR}/TestProject/${OSNAME}_X86_32/${CURRENT_CONFIG}/bin/subDirInBin/testInstallFileToCustomLocation.txt")
     ASSERT(EXISTS ${InstallFile})
 
     TEST_BUILD(install "Install project into given installprefix")
@@ -138,7 +147,14 @@ FUNCTION(TestResourceAndInstallFilesWithConfiguration)
     ASSERT(EXISTS ${resFileInInstallDir})
     
     MESSAGE("Install files are installed (${CURRENT_CONFIG})")
-    SET(InstallFileAfterInstall "${PROJECT_SOURCE_DIR}/TestProject/deliverable/${OSNAME}_X86_32/${CURRENT_CONFIG}/bin/testInstallFile.txt")
+
+    SET(InstallFileAfterInstall "${PROJECT_SOURCE_DIR}/TestProject/deliverable/${OSNAME}_X86_32/${CURRENT_CONFIG}/bin/testInstallFileRelativePath.txt")
+    ASSERT(EXISTS ${InstallFileAfterInstall})
+
+	SET(InstallFileAfterInstall "${PROJECT_SOURCE_DIR}/TestProject/deliverable/${OSNAME}_X86_32/${CURRENT_CONFIG}/bin/testInstallFileAbsolutePath.txt")
+    ASSERT(EXISTS ${InstallFileAfterInstall})
+
+	SET(InstallFileAfterInstall "${PROJECT_SOURCE_DIR}/TestProject/deliverable/${OSNAME}_X86_32/${CURRENT_CONFIG}/bin/subDirInBin/testInstallFileToCustomLocation.txt")
     ASSERT(EXISTS ${InstallFileAfterInstall})
 ENDFUNCTION(TestResourceAndInstallFilesWithConfiguration)
 

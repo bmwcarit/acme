@@ -18,4 +18,11 @@ ACME_ADD_MODULE(TestAddInstallFile static)
 
 ACME_ADD_FILE(main)
 
-ACME_ADD_INSTALL_FILE("${CMAKE_CURRENT_SOURCE_DIR}/testInstallFile.txt")
+#test absolute path
+ACME_ADD_INSTALL_FILE("${CMAKE_CURRENT_SOURCE_DIR}/testInstallFileAbsolutePath.txt")
+
+#test relative path
+ACME_ADD_INSTALL_FILE("testInstallFileRelativePath.txt")
+
+#test relative path copied to sub directory in bin
+ACME_ADD_INSTALL_FILE("testInstallFileToCustomLocation.txt" subDirInBin)
