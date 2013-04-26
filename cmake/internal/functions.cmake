@@ -109,6 +109,10 @@ FUNCTION(INTERNAL_ADD_CMAKE_PROJECT iaap_name)
 						 ${ilts_cmake_arguments}
 						 "${ilts_install_command}"
 			)
+			
+			# Do not add external projects to "All_build" target by default. Targets using external projects
+			# must explicitly add a dependency to trigger build/download etc.
+			SET_TARGET_PROPERTIES( ${iaap_name} PROPERTIES EXCLUDE_FROM_ALL "TRUE" )
 
 			SET(${iaap_name}_DIR "${IAAP_SOURCE_DIR}")
 			
