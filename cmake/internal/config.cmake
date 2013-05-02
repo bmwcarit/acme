@@ -98,7 +98,7 @@ SET(CONFIG_BUILD_UNITTESTS 					 1 	CACHE BOOL 	   "building Unit-Tests")
 SET(CONFIG_BUILD_GLOBAL_TEST_EXECUTABLE    	 0  CACHE BOOL     "enable building of one test executable")
 
 SET(GLOBAL_HEADER_FILE_EXTENSIONS 	"h;hpp;inc" 	CACHE STRING "file extension of header files.")
-SET(GLOBAL_SOURCE_FILE_EXTENSIONS 	"cpp;c;cxx"		CACHE STRING "file extension of source files.")
+SET(GLOBAL_SOURCE_FILE_EXTENSIONS 	"cpp;c;cxx;def;rc"		CACHE STRING "file extension of source files.")
 
 SET(GLOBAL_TEST_LIBS                ""  			CACHE INTERNAL "collect test libs")
 SET(GLOBAL_TEST_SOURCE              ""  			CACHE INTERNAL "collect test source")
