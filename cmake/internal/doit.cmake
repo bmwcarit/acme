@@ -155,7 +155,11 @@ MACRO(INTERNAL_COLLECT_DEPENDENCIES_TEST)
 
 	IF(NOT "${${CURRENT_MODULE_NAME}_TEST_FILES}" STREQUAL "")
 		FOREACH(current_dependency ${${CURRENT_MODULE_NAME}_DEPENDENCIES})
-             SET(collected_dependencies_test ${collected_dependencies_test} ${${current_dependency}_LIBRARIES})
+			IF(NOT ${CURRENT_MODULE_NAME}_${current_dependency}_ONLY_HEADERS)
+				SET(collected_dependencies_test ${collected_dependencies_test} ${${current_dependency}_LIBRARIES})
+			ELSE()
+				MESSAGE(VERBOSE "Not adding libraries of ${current_dependency} to ${CURRENT_MODULE_NAME}Test, because of ONLY_HEADERS option")
+			ENDIF()
 		ENDFOREACH()
 
 		FOREACH (googleMockDep ${GoogleMock_DEPENDENCIES})
