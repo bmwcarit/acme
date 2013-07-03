@@ -439,6 +439,16 @@ ENDFUNCTION(ACME_COMPARE_STATES)
 
 ##
 # \page     ACME_API ACME_API
+# \section  ACME_SET_OUTPUT_NAME ACME_SET_OUTPUT_NAME
+# \text  	Sets the output name of the current target to the specified name
+# \param	Name of the the target
+# \details 	--------------------------------------------------------------------------------------------------------------------\n \n
+FUNCTION(ACME_SET_OUTPUT_NAME outname)
+	INTERNAL_SET_OUTPUT_NAME(${outname})
+ENDFUNCTION()
+
+##
+# \page     ACME_API ACME_API
 # \section  ACME_TEST ACME_TEST
 # \text  	Tests the supplied ACME scripts. Currently there are 23 testcases implemented. To test the ACME scripts you just \n
 #			need to configure the \a TestProject supplied with ACME (directory \a TestProject in the ACME source directory). \n
