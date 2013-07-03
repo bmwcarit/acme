@@ -16,6 +16,10 @@
 
 CMAKE_MINIMUM_REQUIRED(VERSION 2.8.8) # required for target property 'include_directory'
 
+SET (ACME_VERSION "v0.4.0")
+
+MESSAGE(STATUS "ACME Version: ${ACME_VERSION}")
+
 IF ("${TARGET_OS}" STREQUAL "")
 	SET(TARGET_OS ${CMAKE_SYSTEM_NAME})
 ENDIF()
